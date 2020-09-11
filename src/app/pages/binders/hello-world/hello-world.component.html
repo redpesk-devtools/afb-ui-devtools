@@ -1,6 +1,4 @@
-
 <nb-card>
-    <!-- [ngClass]="(step=='step1')?'my-class1':'my-class2'"<nb-card-body> -->
     <nb-card-body>
         <button nbButton shape="round" status="success" *ngIf="(wsStatus$|async).connected ; else disconnected">Binder WS Active'</button>
         <ng-template #disconnected><button nbButton shape="round" status="danger" (click)=afbService.Connect() >Binding WS Fail</button></ng-template>
