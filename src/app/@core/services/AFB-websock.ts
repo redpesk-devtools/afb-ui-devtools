@@ -1,9 +1,9 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 import { Observable, Subject, of, throwError } from 'rxjs';
-import { webSocket, WebSocketSubjectConfig, WebSocketSubject } from "rxjs/webSocket";
-import { map } from 'rxjs/operators';
+// import { webSocket, WebSocketSubjectConfig, WebSocketSubject } from 'rxjs/webSocket';
+// import { map } from 'rxjs/operators';
 
-export interface AFB_context {
+export interface AFBContext {
     token: string;
     uuid: string | undefined;
 }
@@ -13,12 +13,12 @@ export class AFBWebSocket {
 
     ws: WebSocket;
     // wsRx: WebSocketSubject<any>;
-    context: AFB_context;
+    context: AFBContext;
 
     wsConnect$: Observable<Event>;
     wsDisconnect$: Observable<Event>;
 
-    private PROTO1 = "x-afb-ws-json1";
+    private PROTO1 = 'x-afb-ws-json1';
     private _wsConnectSubject = new Subject<Event>();
     private _wsDisconnectSubject = new Subject<Event>();
 
@@ -34,7 +34,7 @@ export class AFBWebSocket {
     constructor(base: string, initialtoken?: string) {
 
         this.base = base;
-        this.context = <AFB_context>{ token: initialtoken, uuid: undefined };
+        this.context = <AFBContext>{ token: initialtoken, uuid: undefined };
 
         this.setURL(window.location.host);
 
@@ -43,11 +43,11 @@ export class AFBWebSocket {
     }
 
     setURL(location: string, port?: number) {
-        this.urlws = "ws://" + location;
+        this.urlws = 'ws://' + location;
         if (port) {
-            this.urlws += ":" + String(port);
+            this.urlws += ':' + String(port);
         }
-        this.urlws += "/" + this.base;
+        this.urlws += '/' + this.base;
         if (this.context.token)
             this.urlws = this.urlws + '?x-afb-token=' + this.context.token;
     }
@@ -88,7 +88,7 @@ export class AFBWebSocket {
                 }
 
                 let id, arr;
-                //do {
+                // do {
                 id = String(this.counter = 4095 & (this.counter + 1));
                 // } while (id in this.pendings);
                 // this.pendings[id] = [resolve, reject];
@@ -100,8 +100,8 @@ export class AFBWebSocket {
                 this.ws.onmessage = (event: MessageEvent) => {
                     observer.next(event);
 
-                }
-            })
+                };
+            });
         // let id, arr;
         // //do {
         // id = String(this.counter = 4095 & (this.counter + 1));
@@ -121,13 +121,13 @@ export class AFBWebSocket {
     /**
      * Receive data from opened websocket
      */
-    Receive() : Observable<any>{
+    Receive(): Observable<any> {
         return Observable.create(
             observer => {
                 this.ws.onmessage = (event: MessageEvent) => {
                     observer.next(event);
-                }
-            }
-        )
+                };
+            },
+        );
     }
 }

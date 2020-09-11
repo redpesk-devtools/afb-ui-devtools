@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     private analytics: AnalyticsService,
-    private iconLibraries: NbIconLibraries
+    private iconLibraries: NbIconLibraries,
   ) {
     this.iconLibraries.registerFontPack('font-awesome', { iconClassPrefix: 'fa' });
     this.iconLibraries.setDefaultPack('font-awesome');

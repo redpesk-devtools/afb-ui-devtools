@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { PagesComponent } from './pages.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { HelloWorldComponent } from "./binders/hello-world/hello-world.component";
+import { HelloWorldComponent } from './binders/hello-world/hello-world.component';
 
 const routes: Routes = [{
   path: '',
@@ -19,10 +19,10 @@ const routes: Routes = [{
       pathMatch: 'full',
     },
     {
-      path:'binders/hello-world',
+      path: 'binders/hello-world',
       component: HelloWorldComponent,
-    }
-  ]
+    },
+  ],
 }];
 
 @NgModule({

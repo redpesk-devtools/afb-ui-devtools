@@ -20,8 +20,8 @@ import {
   NbToastrModule,
   NbWindowModule,
 } from '@nebular/theme';
-//import { AfbWebSocketService } from './afbWebSocketService';
-import { AFBWebSocket } from './AFB-websock';
+// import { AfbWebSocketService } from './afbWebSocketService';
+import { AFBWebSocket } from './@core/services/AFB-websock';
 
 @NgModule({
   declarations: [AppComponent],
@@ -45,9 +45,9 @@ import { AFBWebSocket } from './AFB-websock';
     CoreModule.forRoot(),
   ],
   bootstrap: [AppComponent],
-  providers:[
+  providers: [
     AFBWebSocket,
-  ]
+  ],
 })
 export class AppModule {
 }

@@ -14,6 +14,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
   {
     title: 'Hello World',
     icon: 'music',
-    link:'/pages/binders/hello-world'
-  }
+    link: '/pages/binders/hello-world',
+  },
 ];
