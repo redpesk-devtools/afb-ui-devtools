@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject, of, throwError } from 'rxjs';
+import { Observable, Subject, of, throwError, BehaviorSubject } from 'rxjs';
 // import { webSocket, WebSocketSubjectConfig, WebSocketSubject } from 'rxjs/webSocket';
 // import { map } from 'rxjs/operators';
 
@@ -9,17 +9,19 @@ export interface AFBContext {
 }
 
 @Injectable()
-export class AFBWebSocket {
+export class AFBWebSocketService {
 
     ws: WebSocket;
     // wsRx: WebSocketSubject<any>;
     context: AFBContext;
 
     wsConnect$: Observable<Event>;
+    wsConnected$: Observable<Boolean>;
     wsDisconnect$: Observable<Event>;
 
     private PROTO1 = 'x-afb-ws-json1';
     private _wsConnectSubject = new Subject<Event>();
+    private _wsConnectedSubject = new BehaviorSubject<Boolean>(false);
     private _wsDisconnectSubject = new Subject<Event>();
 
     private counter = 0;
@@ -30,15 +32,18 @@ export class AFBWebSocket {
     // private readonly EVENT = 5;
 
     private urlws: string;
+    urlwspub: string;
+    connected: string;
 
-    constructor(base: string, initialtoken?: string) {
+    init(base: string, initialtoken?: string) {
 
         this.base = base;
-        this.context = <AFBContext>{ token: initialtoken, uuid: undefined };
+        this.context = <AFBContext>{ token: initialtoken, uuid: undefined};
 
         this.setURL(window.location.host);
 
         this.wsConnect$ = this._wsConnectSubject.asObservable();
+        this.wsConnected$ = this._wsConnectedSubject.asObservable();
         this.wsDisconnect$ = this._wsDisconnectSubject.asObservable();
     }
 
@@ -48,6 +53,7 @@ export class AFBWebSocket {
             this.urlws += ':' + String(port);
         }
         this.urlws += '/' + this.base;
+        this.urlwspub = this.urlws;
         if (this.context.token)
             this.urlws = this.urlws + '?x-afb-token=' + this.context.token;
     }
@@ -62,11 +68,13 @@ export class AFBWebSocket {
 
             console.log('Opened Socket');
             console.log('test', event);
+            this._wsConnectedSubject.next(true);
             this._wsConnectSubject.next(event);
         };
         this.ws.onerror = (event) => console.log('err');
         this.ws.onclose = (event: CloseEvent) => {
             console.log('Closed socket');
+            this._wsConnectedSubject.next(false);
             this._wsDisconnectSubject.next(event);
         };
         return null;
@@ -84,9 +92,7 @@ export class AFBWebSocket {
             observer => {
                 if (this.ws.readyState !== 1) {
                     return throwError('socketnotready');
-
                 }
-
                 let id, arr;
                 // do {
                 id = String(this.counter = 4095 & (this.counter + 1));
@@ -94,12 +100,10 @@ export class AFBWebSocket {
                 // this.pendings[id] = [resolve, reject];
                 arr = [this.CALL, id, method, request];
                 if (this.context.token) arr.push(this.context.token);
-                console.log(arr);
+                console.log('afb:' ,arr);
                 this.ws.send(JSON.stringify(arr));
-
                 this.ws.onmessage = (event: MessageEvent) => {
                     observer.next(event);
-
                 };
             });
         // let id, arr;

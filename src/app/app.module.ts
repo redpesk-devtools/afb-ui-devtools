@@ -19,9 +19,11 @@ import {
   NbSidebarModule,
   NbToastrModule,
   NbWindowModule,
+  NbLayoutModule,
 } from '@nebular/theme';
 // import { AfbWebSocketService } from './afbWebSocketService';
-import { AFBWebSocket } from './@core/services/AFB-websock';
+import { AFBWebSocketService } from './@core/services/AFB-websocket.service';
+import { VerbsService } from '../app/@core/services/verbs.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -42,11 +44,13 @@ import { AFBWebSocket } from './@core/services/AFB-websock';
     NbChatModule.forRoot({
       messageGoogleMapKey: 'AIzaSyA_wNuCzia92MAmdLRzmqitRGvCF7wCZPY',
     }),
+    NbLayoutModule,
     CoreModule.forRoot(),
   ],
   bootstrap: [AppComponent],
   providers: [
-    AFBWebSocket,
+    AFBWebSocketService,
+    VerbsService,
   ],
 })
 export class AppModule {

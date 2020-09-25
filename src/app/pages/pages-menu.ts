@@ -13,7 +13,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
   },
   {
     title: 'Hello World',
-    icon: 'music',
+    icon: 'radio-button-on',
     link: '/pages/binders/hello-world',
   },
 ];

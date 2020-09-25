@@ -1,0 +1,19 @@
+<nb-accordion>
+<nb-accordion-item *ngFor="let verb of verbs">
+    <nb-accordion-item-header>
+        {{verb.action}}
+    </nb-accordion-item-header>
+    <nb-accordion-item-body>
+        <!-- <div>
+            <input type="text" id="name" name="name" required
+       minlength="4" maxlength="8" size="10"> </br>
+            <input type="radio" id="huey" name="drone" value="verb.query"
+                   checked>
+            <label for="huey">{{ verb.query}}</label>
+          </div> -->
+        <button nbButton shape="round" (click)="callBinder(verb.api,verb.verb,verb.query)">Test</button>
+    </nb-accordion-item-body>
+</nb-accordion-item>
+</nb-accordion>
+
+  

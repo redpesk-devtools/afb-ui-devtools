@@ -1,7 +1,38 @@
-<nb-card accent="info">
-    <nb-card-header>Ping
-        <button nbButton outline status="info" class="float-right" (click)="callBinder('helloworld','ping' ,{args:{'var1':1234, 'var2':'Test ping'}})">Test</button>
-    </nb-card-header>
+<nb-card>
+    <!-- [ngClass]="(step=='step1')?'my-class1':'my-class2'"<nb-card-body> -->
     <nb-card-body>
+        <button nbButton shape="round" [ngStyle]="{'background-color': (connected$ | async) ? 'limegreen' : 'crimson' }">Binder WS {{ (connected$ | async) ? 'Active' : 'Fail'}}</button>
+        <button nbButton shape="round" id="monitoring">Debug/Monitoring</button>
+        
     </nb-card-body>
 </nb-card>
+<div class="row">
+    <div class="col-4">
+        <calls></calls>
+        <!-- <nb-accordion multi>
+            <calls></calls>
+            <nb-accordion-item *ngFor="let verb of verbs">
+                <nb-accordion-item-header>
+                    {{ verb.action }}
+                </nb-accordion-item-header>
+                <nb-accordion-item-body>
+                    <button nbButton shape="round" (click)="callBinder(verb.api,verb.verb,verb.query)">{{ verb.action }}</button>
+                </nb-accordion-item-body>
+            </nb-accordion-item>
+        </nb-accordion> -->
+    </div>
+    <div class="col-8" *ngIf="connected$|async">
+        <nb-card>
+            <nb-card-header>Question</nb-card-header>
+            <nb-card-body id="question"></nb-card-body>
+        </nb-card>
+        <nb-card>
+            <nb-card-header>Response</nb-card-header>
+            <nb-card-body id="output"></nb-card-body>
+        </nb-card>
+        <nb-card>
+            <nb-card-header>Events</nb-card-header>
+            <nb-card-body id="outevt"></nb-card-body>
+        </nb-card>
+    </div>
+</div>
