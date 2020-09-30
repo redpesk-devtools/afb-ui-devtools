@@ -1,10 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Subscription, from } from 'rxjs';
-import { AFBWebSocketService } from '../../../@core/services/AFB-websocket.service';
-import { VerbsService } from '../../../@core/services/verbs.service';
+import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'calls',
+  selector: 'rp-calls',
   templateUrl: './calls.component.html',
   styleUrls: ['./calls.component.scss'],
 })
@@ -25,15 +23,15 @@ export class CallsComponent implements OnInit {
   // urlws = "ws://localhost:8000/api?x-afb-token=mysecret"
 
 
-  constructor(private verbsService: VerbsService,
-    private afbService: AFBWebSocketService) {
-      this.verbs = verbsService.verbs;
-      afbService.init('api', 'HELLO');
+  constructor(/*   private verbsService: VerbsService,
+     private afbService: AFBWebSocketService*/) {
+    //   this.verbs = verbsService.verbs;
+    //   afbService.init('api', 'HELLO');
   }
 
   ngOnInit(): void {
-    this.afbService.setURL('localhost', 1234);
-    this.afbService.connect();
+    // this.afbService.setURL('localhost', 1234);
+    // this.afbService.connect();
   }
 
 
@@ -61,12 +59,8 @@ export class CallsComponent implements OnInit {
   //   }
 
   closeSocket() {
-    this.afbService.disconnect();
-    this.status = 'closed';
-  }
-
-  ngOnDestroy(): void {
-    // this.closeSocket();
+    // this.afbService.disconnect();
+    // this.status = 'closed';
   }
 
 }

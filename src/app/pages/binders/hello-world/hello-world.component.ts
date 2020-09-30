@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { Subscription, from, Observable } from 'rxjs';
-import { AFBWebSocketService } from '../../../@core/services/AFB-websocket.service';
+import { Subscription, Observable } from 'rxjs';
+import { AFBWebSocketService, SocketStatus } from '../../../@core/services/AFB-websocket.service';
 import { VerbsService } from '../../../@core/services/verbs.service';
 
 
 @Component({
-  selector: 'hello-world',
+  selector: 'rp-hello-world',
   templateUrl: './hello-world.component.html',
   styleUrls: ['./hello-world.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,7 +19,8 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   verbs;
   evtidx = 0;
   count = 0;
-  connected$: Observable<Boolean>;
+
+  wsStatus$: Observable<SocketStatus>;
   // urlws = "ws://" + window.location.host + "/api";
   // urlws = "ws://localhost:8000/api?x-afbService-token=mysecret"
 
@@ -27,18 +28,18 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   constructor(private verbsService: VerbsService,
     private afbService: AFBWebSocketService) {
     this.verbs = verbsService.verbs;
-    afbService.init('api', 'HELLO');
+    afbService.Init('api', 'HELLO');
   }
 
   ngOnInit(): void {
-    this.afbService.setURL('localhost', 1234);
-    this.afbService.connect();
-    this.connected$ = this.afbService.wsConnected$;
+    this.afbService.SetURL('localhost', '1234');
+    this.afbService.Connect();
+    this.wsStatus$ = this.afbService.Status$;
 
   }
 
   callBinder(api, verb, query) {
-    this.status = this.afbService.Send(api + "/" + verb, query).subscribe(d => {
+    this.status = this.afbService.Send(api + '/' + verb, query).subscribe(d => {
       console.log('data ', d);
     });
   }
@@ -99,7 +100,7 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   //   }
 
   closeSocket() {
-    this.afbService.disconnect();
+    this.afbService.Disconnect();
     this.status = 'closed';
   }
 

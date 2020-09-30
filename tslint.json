@@ -6,7 +6,12 @@
       "trailing-comma": [
         true,
         {
-          "multiline": "always",
+          "multiline": {
+            "objects": "ignore",
+            "arrays": "always",
+            "functions": "ignore",
+            "typeLiterals": "ignore"
+          },
           "singleline": "never"
         }
       ],
@@ -105,13 +110,13 @@
       "directive-selector": [
         true,
         "attribute",
-        "ngx",
+        ["ngx", "rp"],
         "camelCase"
       ],
       "component-selector": [
         true,
         "element",
-        "ngx",
+        ["ngx", "rp"],
         "kebab-case"
       ],
       "ban": [
@@ -134,4 +139,3 @@
       "no-unused-variable": true
     }
   }
-  

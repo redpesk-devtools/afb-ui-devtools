@@ -1,15 +1,15 @@
 <nb-card>
     <!-- [ngClass]="(step=='step1')?'my-class1':'my-class2'"<nb-card-body> -->
     <nb-card-body>
-        <button nbButton shape="round" [ngStyle]="{'background-color': (connected$ | async) ? 'limegreen' : 'crimson' }">Binder WS {{ (connected$ | async) ? 'Active' : 'Fail'}}</button>
+        <button nbButton shape="round" [ngStyle]="{'background-color': (wsStatus$ | async).connected ? 'limegreen' : 'crimson' }">Binder WS {{ (wsStatus$ | async)?.connected ? 'Active' : 'Fail'}}</button>
         <button nbButton shape="round" id="monitoring">Debug/Monitoring</button>
-        
+
     </nb-card-body>
 </nb-card>
 <div class="row">
     <div class="col-4">
-        <calls></calls>
-        <!-- <nb-accordion multi>
+        <!-- <calls></calls> -->
+         <nb-accordion multi>
             <calls></calls>
             <nb-accordion-item *ngFor="let verb of verbs">
                 <nb-accordion-item-header>
@@ -19,9 +19,9 @@
                     <button nbButton shape="round" (click)="callBinder(verb.api,verb.verb,verb.query)">{{ verb.action }}</button>
                 </nb-accordion-item-body>
             </nb-accordion-item>
-        </nb-accordion> -->
+        </nb-accordion>
     </div>
-    <div class="col-8" *ngIf="connected$|async">
+    <div class="col-8" *ngIf="(wsStatus$|async)?.connected">
         <nb-card>
             <nb-card-header>Question</nb-card-header>
             <nb-card-body id="question"></nb-card-body>

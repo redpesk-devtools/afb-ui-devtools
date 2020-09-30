@@ -1,137 +1,150 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject, of, throwError, BehaviorSubject } from 'rxjs';
-// import { webSocket, WebSocketSubjectConfig, WebSocketSubject } from 'rxjs/webSocket';
-// import { map } from 'rxjs/operators';
+import { Observable, Subject, BehaviorSubject, from, ReplaySubject } from 'rxjs';
+import { filter, switchMap } from 'rxjs/operators';
+import { AFB } from '../afb';
 
 export interface AFBContext {
     token: string;
     uuid: string | undefined;
 }
 
+export interface AFBEvent {
+    action: string;
+    event: string;
+    value: string;
+}
+
+export interface SocketStatus {
+    connected: boolean;
+    reconnect_attempt: number;
+    reconnect_failed: boolean;
+}
+
 @Injectable()
 export class AFBWebSocketService {
 
-    ws: WebSocket;
-    // wsRx: WebSocketSubject<any>;
+    ws: any;
     context: AFBContext;
 
     wsConnect$: Observable<Event>;
-    wsConnected$: Observable<Boolean>;
     wsDisconnect$: Observable<Event>;
+    Status$: Observable<SocketStatus>;
+    InitDone$: Observable<boolean>;
 
-    private PROTO1 = 'x-afb-ws-json1';
     private _wsConnectSubject = new Subject<Event>();
-    private _wsConnectedSubject = new BehaviorSubject<Boolean>(false);
     private _wsDisconnectSubject = new Subject<Event>();
+    private _status = <SocketStatus>{ connected: false };
+    private _statusSubject = <BehaviorSubject<SocketStatus>>new BehaviorSubject(this._status);
+    private _isInitDone = <ReplaySubject<boolean>>new ReplaySubject(1);
+    private afb: any;
 
-    private counter = 0;
-    private readonly CALL = 2;
-    private base;
-    // private readonly RETOK = 3;
-    // private readonly RETERR = 4;
-    // private readonly EVENT = 5;
+    Init(base: string, initialToken?: string) {
 
-    private urlws: string;
-    urlwspub: string;
-    connected: string;
-
-    init(base: string, initialtoken?: string) {
-
-        this.base = base;
-        this.context = <AFBContext>{ token: initialtoken, uuid: undefined};
-
-        this.setURL(window.location.host);
+        // keep it ?
+        // this.context = <AFBContext>{ token: initialToken, uuid: undefined };
+        this.afb = new AFB({
+            base: base,
+            token: initialToken
+        });
 
         this.wsConnect$ = this._wsConnectSubject.asObservable();
-        this.wsConnected$ = this._wsConnectedSubject.asObservable();
         this.wsDisconnect$ = this._wsDisconnectSubject.asObservable();
+        this.Status$ = this._statusSubject.asObservable();
+        this.InitDone$ = this._isInitDone.asObservable();
     }
 
-    setURL(location: string, port?: number) {
-        this.urlws = 'ws://' + location;
-        if (port) {
-            this.urlws += ':' + String(port);
-        }
-        this.urlws += '/' + this.base;
-        this.urlwspub = this.urlws;
-        if (this.context.token)
-            this.urlws = this.urlws + '?x-afb-token=' + this.context.token;
+    SetURL(location: string, port?: string) {
+        this.afb.setURL(location, port);
     }
 
-    connect(): Error {
-        this.ws = new WebSocket(this.urlws, [this.PROTO1]);
-        // this.wsRx = webSocket({
-        //     url: this.urlws,
-        //     protocol: [this.PROTO1]
-        // });
-        this.ws.onopen = (event: Event) => {
+    Connect(): Error {
 
-            console.log('Opened Socket');
-            console.log('test', event);
-            this._wsConnectedSubject.next(true);
-            this._wsConnectSubject.next(event);
-        };
-        this.ws.onerror = (event) => console.log('err');
+        // Establish websocket connection
+        this.ws = new this.afb.ws(
+            //  onopen
+            (event: Event) => {
+                this._NotifyServerState(true);
+                this._wsConnectSubject.next(event);
+                this._isInitDone.next(true);
+            },
+            // onerror
+            function () {
+                this._isInitDone.next(false);
+                console.error('Can not open websocket');
+            }
+        );
+
         this.ws.onclose = (event: CloseEvent) => {
-            console.log('Closed socket');
-            this._wsConnectedSubject.next(false);
+            this._isInitDone.next(false);
+            this._NotifyServerState(false);
             this._wsDisconnectSubject.next(event);
         };
         return null;
     }
 
-    disconnect() {
+    Disconnect() {
         // TODO : close all subjects
+        this.ws.close();
     }
 
     /**
      * Send data to the ws server
      */
-    Send(method: string, request: any): Observable<any> {
-        return Observable.create(
-            observer => {
-                if (this.ws.readyState !== 1) {
-                    return throwError('socketnotready');
-                }
-                let id, arr;
-                // do {
-                id = String(this.counter = 4095 & (this.counter + 1));
-                // } while (id in this.pendings);
-                // this.pendings[id] = [resolve, reject];
-                arr = [this.CALL, id, method, request];
-                if (this.context.token) arr.push(this.context.token);
-                console.log('afb:' ,arr);
-                this.ws.send(JSON.stringify(arr));
-                this.ws.onmessage = (event: MessageEvent) => {
-                    observer.next(event);
-                };
-            });
-        // let id, arr;
-        // //do {
-        // id = String(this.counter = 4095 & (this.counter + 1));
-        // // } while (id in this.pendings);
-        // // this.pendings[id] = [resolve, reject];
-        // arr = [this.CALL, id, method, request];
-        // if (this.context.token) arr.push(this.context.token);
-        // console.log(arr);
-        // this.wsRx.next(JSON.stringify(arr));
-        // return this.wsRx.multiplex(
-        //     () => {},
-        //     () => {},
-        //     message => message.type === "id"
-        // ).pipe(map(message => message.message));
+    Send(method: string, params: any): Observable<any> {
+        return this._isInitDone.pipe(
+            filter(done => done),
+            switchMap(() => {
+                return from(this.ws.call(method, params)
+                    .then(function (obj) {
+                        return obj.response;
+                    })
+                );
+            })
+        );
     }
 
     /**
      * Receive data from opened websocket
      */
-    Receive(): Observable<any> {
+    Subscribe(url: string, event: AFBEvent): Observable<any> {
+        // return Observable.create(
+        //     observer => {
+        //         this.ws.onmessage = (event: MessageEvent) => {
+        //             observer.next(event);
+        //         };
+        //     },
+        // );
         return Observable.create(
             observer => {
-                this.ws.onmessage = (event: MessageEvent) => {
-                    observer.next(event);
-                };
-            },
+                this._isInitDone.pipe(
+                    filter(done => done),
+                    switchMap(() => {
+                        return from(
+                            this.ws.call(url, event)
+                                .then(function (/*obj*/) {
+                                    const eventId = url.split('/')[0] + '/' + (event.value ? event.value : event.event);
+                                    this.ws.onevent(eventId, (event: any) => {
+                                        observer.next(event.data);
+                                    });
+                                })
+                        );
+                    })
+                );
+            }
         );
     }
+
+
+    private _NotifyServerState(connected: boolean, attempt?: number) {
+        this._status.connected = connected;
+        if (attempt !== null) {
+            this._status.reconnect_attempt = attempt;
+        }
+        if (connected) {
+            this._status.reconnect_attempt = 0;
+            this._status.reconnect_failed = false;
+        }
+        this._statusSubject.next(Object.assign({}, this._status));
+    }
+
 }

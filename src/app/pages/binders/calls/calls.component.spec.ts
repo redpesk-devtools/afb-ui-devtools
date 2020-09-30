@@ -8,7 +8,7 @@ describe('CallsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CallsComponent ]
+      declarations: [ CallsComponent ],
     })
     .compileComponents();
   });
