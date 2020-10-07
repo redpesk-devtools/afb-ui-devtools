@@ -33,7 +33,7 @@ export class AFBWebSocketService {
 
     private _wsConnectSubject = new Subject<Event>();
     private _wsDisconnectSubject = new Subject<Event>();
-    private _status = <SocketStatus>{ connected: false };
+    private _status = <SocketStatus>{ connected: false, reconnect_attempt: 0};
     private _statusSubject = <BehaviorSubject<SocketStatus>>new BehaviorSubject(this._status);
     private _isInitDone = <ReplaySubject<boolean>>new ReplaySubject(1);
     private afb: any;
@@ -66,18 +66,28 @@ export class AFBWebSocketService {
                 this._NotifyServerState(true);
                 this._wsConnectSubject.next(event);
                 this._isInitDone.next(true);
+                this._status.reconnect_attempt = 0;
             },
             // onerror
-            function () {
+            () => {
                 this._isInitDone.next(false);
                 console.error('Can not open websocket');
             }
         );
 
         this.ws.onclose = (event: CloseEvent) => {
+            console.error(this._status.reconnect_attempt);
             this._isInitDone.next(false);
-            this._NotifyServerState(false);
             this._wsDisconnectSubject.next(event);
+            if (this._status.reconnect_attempt < 100) {
+                this._status.reconnect_attempt++;
+                setTimeout(() => {
+                    this._NotifyServerState(false, this._status.reconnect_attempt);
+                    this.Connect();
+                }, 1000);
+            } else {
+                console.error('Reconnection failed. Please make sure your binding is running');
+            }
         };
         return null;
     }
@@ -95,7 +105,7 @@ export class AFBWebSocketService {
             filter(done => done),
             switchMap(() => {
                 return from(this.ws.call(method, params)
-                    .then(function (obj) {
+                    .then((obj) => {
                         return obj.response;
                     })
                 );
@@ -121,10 +131,10 @@ export class AFBWebSocketService {
                     switchMap(() => {
                         return from(
                             this.ws.call(url, event)
-                                .then(function (/*obj*/) {
+                                .then((/*obj*/) => {
                                     const eventId = url.split('/')[0] + '/' + (event.value ? event.value : event.event);
-                                    this.ws.onevent(eventId, (event: any) => {
-                                        observer.next(event.data);
+                                    this.ws.onevent(eventId, (wsevent: any) => {
+                                        observer.next(wsevent.data);
                                     });
                                 })
                         );

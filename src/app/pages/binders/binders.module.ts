@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 
 import { ThemeModule } from '../../@theme/theme.module';
 import { HelloWorldComponent } from './hello-world/hello-world.component';
-import { CallsComponent } from './calls/calls.component';
 import { NbCardModule, NbButtonModule, NbAccordionModule } from '@nebular/theme';
 
 @NgModule({
@@ -14,7 +13,6 @@ import { NbCardModule, NbButtonModule, NbAccordionModule } from '@nebular/theme'
   ],
   declarations: [
     HelloWorldComponent,
-    CallsComponent,
   ],
 })
 export class BindersModule { }

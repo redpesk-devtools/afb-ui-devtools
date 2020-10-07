@@ -1,21 +1,20 @@
+
 <nb-card>
     <!-- [ngClass]="(step=='step1')?'my-class1':'my-class2'"<nb-card-body> -->
     <nb-card-body>
-        <button nbButton shape="round" [ngStyle]="{'background-color': (wsStatus$ | async).connected ? 'limegreen' : 'crimson' }">Binder WS {{ (wsStatus$ | async)?.connected ? 'Active' : 'Fail'}}</button>
+        <button nbButton shape="round" status="success" *ngIf="(wsStatus$|async).connected ; else disconnected">Binder WS Active'</button>
+        <ng-template #disconnected><button nbButton shape="round" status="danger" (click)=afbService.Connect() >Binding WS Fail</button></ng-template>
         <button nbButton shape="round" id="monitoring">Debug/Monitoring</button>
-
     </nb-card-body>
 </nb-card>
 <div class="row">
     <div class="col-4">
-        <!-- <calls></calls> -->
          <nb-accordion multi>
-            <calls></calls>
             <nb-accordion-item *ngFor="let verb of verbs">
                 <nb-accordion-item-header>
                     {{ verb.action }}
                 </nb-accordion-item-header>
-                <nb-accordion-item-body>
+                <nb-accordion-item-body *ngIf="(wsStatus$|async)?.connected">
                     <button nbButton shape="round" (click)="callBinder(verb.api,verb.verb,verb.query)">{{ verb.action }}</button>
                 </nb-accordion-item-body>
             </nb-accordion-item>
