@@ -6,28 +6,56 @@
     </nb-card-body>
 </nb-card>
 <div class="row">
-    <div class="col-4">
-         <nb-accordion multi>
-            <nb-accordion-item *ngFor="let verb of verbs">
-                <nb-accordion-item-header>
-                    {{ verb.action }}
-                </nb-accordion-item-header>
-                <nb-accordion-item-body *ngIf="(wsStatus$|async)?.connected">
-                    <button nbButton shape="round" (click)="callBinder(verb.api,verb.verb,verb.query)">{{ verb.action }}</button>
-                </nb-accordion-item-body>
-            </nb-accordion-item>
-        </nb-accordion>
+    <div class="col-5">
+        <nb-flip-card *ngFor="let api of (verbs$ | async)">
+            <nb-card-front>
+              <nb-card accent="primary">
+                <nb-card-header>{{ api.title }}</nb-card-header>
+              
+                    <nb-accordion multi *ngFor="let verb of api.verbs">
+                        <nb-accordion-item>
+                            <nb-accordion-item-header>
+                                {{ verb.description }}
+                            </nb-accordion-item-header>
+                        <nb-accordion-item-body>
+                            <p *ngIf="verb.description">Description: {{ verb.description }}</p>
+                            <p *ngIf="verb.query">Suggested query: {{ verb.query }}</p>
+                            <input NbInput type="text" placeholder="Please enter query">
+                            <button nbButton outline status="primary" size="small">Test</button>
+                        </nb-accordion-item-body>
+                    </nb-accordion-item>
+                </nb-accordion>
+                <nb-card-footer>See info</nb-card-footer>
+              </nb-card>
+            </nb-card-front>
+            <nb-card-back>
+              <nb-card accent="danger">
+                <nb-card-header>{{ api.title }}</nb-card-header>
+                <nb-card-body>
+                    <p *ngIf="api.version">Version: {{ api.version }}</p>
+                    <p *ngIf="api.description">Description: {{ api.description }}</p>
+                </nb-card-body>
+          
+                <nb-card-footer>See verbs</nb-card-footer>
+              </nb-card>
+            </nb-card-back>
+          </nb-flip-card>
+          
+        <!-- <pre>{{ verbs$ | async | json }}</pre>  -->
+       
     </div>
-    <div class="col-8" *ngIf="(wsStatus$|async)?.connected">
-        <nb-card>
+    <div class="col-7" *ngIf="(wsStatus$|async)?.connected">
+        <nb-card accent="info">
             <nb-card-header>Question</nb-card-header>
-            <nb-card-body id="question"></nb-card-body>
+            <nb-card-body id="question">
+                <pre>{{ Gwen }}</pre>
+            </nb-card-body>
         </nb-card>
-        <nb-card>
+        <nb-card accent="info">
             <nb-card-header>Response</nb-card-header>
             <nb-card-body id="output"></nb-card-body>
         </nb-card>
-        <nb-card>
+        <nb-card accent="info">
             <nb-card-header>Events</nb-card-header>
             <nb-card-body id="outevt"></nb-card-body>
         </nb-card>

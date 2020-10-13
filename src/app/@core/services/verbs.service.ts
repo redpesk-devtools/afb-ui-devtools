@@ -1,5 +1,11 @@
 import { Injectable } from '@angular/core';
 
+export interface Verb {
+  api: string;
+  verb: string;
+  query: string;
+  description: string;
+}
 @Injectable()
 export class VerbsService {
     verbs = [
@@ -52,4 +58,27 @@ export class VerbsService {
             action: 'Unsubscribe event',
         },
     ];
+    // getApis() {
+    //     let apiVerbs: Array<Object>;
+    //     this.status= this.afbService.Send('monitor/get',{'apis':true}).subscribe(d => {
+    //       console.log('essai', d);
+    //       const keys = Object.keys(d.apis);
+    //       const array = keys.map(key => ({ key: key, value: d.apis[key] }));
+    //       console.log('apis', keys);
+    //       array.forEach(function (value) {
+    //         if (value.key !== 'monitor') {
+    //           const keys2 = Object.keys(value.value.paths);
+    //           const array2 = keys2.map(key => ({ key: key, value: value.value.paths[key] }));
+    //           array2.forEach(function (value2) {
+    //             let Verb2 = {} as Verb;
+    //             Verb2.api = value.key;
+    //             Verb2.verb = value2.key;
+    //             console.log('final', Verb2);
+    //           });
+    //           console.log(array2);
+    //           console.log(value.key);
+    //           }
+    //         });
+    //     });
+    //   }
 }
