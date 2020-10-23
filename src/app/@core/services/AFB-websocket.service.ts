@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, from, ReplaySubject } from 'rxjs';
-import { filter, switchMap, map } from 'rxjs/operators';
+import { catchError, filter, switchMap, map } from 'rxjs/operators';
 import { AFB } from '../afb';
 
 export interface AFBContext {
@@ -46,17 +46,18 @@ export class AFBWebSocketService {
 
     wsConnect$: Observable<Event>;
     wsDisconnect$: Observable<Event>;
+    wsEvent$: Observable<Event>;
     Status$: Observable<SocketStatus>;
     InitDone$: Observable<boolean>;
-    // ApiVerbs$: Observable<Array<AFBVerb>>;
 
     private _wsConnectSubject = new Subject<Event>();
     private _wsDisconnectSubject = new Subject<Event>();
+    private _wsEventSubject = new Subject<Event>();
     private _status = <SocketStatus>{ connected: false, reconnect_attempt: 0 };
     private _statusSubject = <BehaviorSubject<SocketStatus>>new BehaviorSubject(this._status);
     private _isInitDone = <ReplaySubject<boolean>>new ReplaySubject(1);
-    // private _apiVerbsSubject = new Subject<Array<AFBVerb>>();
     private afb: any;
+    response: object;
 
     Init(base: string, initialToken?: string) {
 
@@ -69,9 +70,10 @@ export class AFBWebSocketService {
 
         this.wsConnect$ = this._wsConnectSubject.asObservable();
         this.wsDisconnect$ = this._wsDisconnectSubject.asObservable();
+        this.wsEvent$ = this._wsEventSubject.asObservable();
         this.Status$ = this._statusSubject.asObservable();
         this.InitDone$ = this._isInitDone.asObservable();
-        // this.ApiVerbs$ = this._apiVerbsSubject.asObservable();
+        this.response = {};
     }
 
     SetURL(location: string, port?: string) {
@@ -121,17 +123,29 @@ export class AFBWebSocketService {
     /**
      * Send data to the ws server
      */
-    Send(method: string, params: any): Observable<any> {
+    Send(method: string, params: object|string): Observable<any> {
+        const param = this.CheckQuery(params);
         return this._isInitDone.pipe(
             filter(done => done),
             switchMap(() => {
-                return from(this.ws.call(method, params)
-                    .then((obj) => {
-                        return obj.response;
-                    })
+                return from(this.ws.call(method, param)
+                    .then(
+                        (obj) => {
+                            return obj;
+                        },
+                        (err) => {
+                            return err;
+                        }
+                    )
                 );
             })
         );
+    }
+
+    CheckQuery(params: object|string) {
+        if (!params)
+            params = {};
+        return typeof params === 'string' ? JSON.parse(params) : params;
     }
 
     /**
@@ -155,6 +169,7 @@ export class AFBWebSocketService {
                                 .then((/*obj*/) => {
                                     const eventId = url.split('/')[0] + '/' + (event.value ? event.value : event.event);
                                     this.ws.onevent(eventId, (wsevent: any) => {
+                                        console.log(wsevent);
                                         observer.next(wsevent.data);
                                     });
                                 })
@@ -181,7 +196,7 @@ export class AFBWebSocketService {
     Discover(): Observable<AFBApis> {
         return this.Send('monitor/get', { 'apis': true }).pipe(
             map(data => {
-                return this._GetAFBApis(data);
+                return this._GetAFBApis(data.response);
             })
         );
     }
@@ -203,6 +218,7 @@ export class AFBWebSocketService {
                 Apis.push(api);
             }
         });
+        console.log('apis', Apis);
         return Apis;
     }
 

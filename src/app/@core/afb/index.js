@@ -200,6 +200,7 @@ var AFB = function (base, initialtoken) {
                 this.pendings[id] = [resolve, reject];
                 arr = [CALL, id, method, request];
                 if (AFB_context.token) arr.push(AFB_context.token);
+                console.log('arr1', arr);
                 this.ws.send(JSON.stringify(arr));
             }).bind(this));
         }

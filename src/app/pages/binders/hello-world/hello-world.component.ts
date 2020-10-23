@@ -18,56 +18,43 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   el;
   Gwen = 'angular';
   evtidx = 0;
-  count = 0;
-
+  count: number;
+  query: string = '';
+  host: string = 'localhost';
+  port: string = '1234';
 
   wsStatus$: Observable<SocketStatus>;
   verbs$: Observable<Array<AFBApi>>;
+  events$: Observable<Event>;
+  questions: Array<String>;
+  responses: Array<object>;
   // urlws = "ws://" + window.location.host + "/api";
   // urlws = "ws://localhost:8000/api?x-afbService-token=mysecret"
 
-
   constructor(private afbService: AFBWebSocketService) {
     afbService.Init('api', 'HELLO');
-    // console.log('onConstruct', this.apiVerbs);
-    // this.verbsService = verbsService;
-    // this.verbs = this.apiVerbs;
-    // console.log('verbs', this.verbs);
+
   }
 
   ngOnInit(): void {
-    this.afbService.SetURL('localhost', '1234');
+    this.afbService.SetURL(this.host, this.port);
     this.afbService.Connect();
     this.wsStatus$ = this.afbService.Status$;
     this.verbs$ = this.afbService.Discover();
+    this.questions = [];
+    this.responses = [];
+    this.count = 0;
   }
+
 
   callBinder(api, verb, query) {
-    this.status = this.afbService.Send(api + '/' + verb, query).subscribe(d => {
-      // console.log('data ', d);
-    });
+    this.afbService.Send(api + verb, query).subscribe(d => {
+          this.status = d.response;
+          this.questions.unshift(this.count + ': ws://' + this.host + ':' + this.port + '/api/' + api + verb + '?query=' + query);
+          this.responses.unshift(d);
+        });
+        this.count++;
   }
-
-  // this.apiVerbs = this.afbService.Discover(d);
-  //   const keys = Object.keys(d.apis);
-  //   const array = keys.map(key => ({ key: key, value: d.apis[key] }));
-  //   console.log('array',array);
-  //   array.forEach(value => {
-  //     if (value.key !== 'monitor') {
-  //         this.apiVerbs.push(value);
-  //       }
-  //     });
-  // });
-  // this.status = this.afbService.Send('monitor/get', {'apis': true}).subscribe(d => {
-  //   const keys = Object.keys(d.apis);
-  //   const array = keys.map(key => ({ key: key, value: d.apis[key] }));
-  //   console.log('array',array);
-  //   array.forEach(value => {
-  //     if (value.key !== 'monitor') {
-  //         this.apiVerbs.push(value);
-  //       }
-  //     });
-  // });
 
   closeSocket() {
     this.afbService.Disconnect();
@@ -77,5 +64,4 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.closeSocket();
   }
-
 }
