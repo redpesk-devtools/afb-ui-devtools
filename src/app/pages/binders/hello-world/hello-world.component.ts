@@ -16,7 +16,6 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   wsSubscription: Subscription;
   status;
   el;
-  Gwen = 'angular';
   evtidx = 0;
   count: number;
   query: string = '';
@@ -25,7 +24,6 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
 
   wsStatus$: Observable<SocketStatus>;
   verbs$: Observable<Array<AFBApi>>;
-  events$: Observable<Event>;
   questions: Array<String>;
   responses: Array<object>;
   // urlws = "ws://" + window.location.host + "/api";
@@ -50,8 +48,10 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   callBinder(api, verb, query) {
     this.afbService.Send(api + verb, query).subscribe(d => {
           this.status = d.response;
-          this.questions.unshift(this.count + ': ws://' + this.host + ':' + this.port + '/api/' + api + verb + '?query=' + query);
-          this.responses.unshift(d);
+          const req = this.count + ': ws://' + this.host + ':' + this.port + '/api/' + api + verb + '?query=' + query;
+          this.questions.unshift(this.afbService.syntaxHighlight(req));
+          const res = this.afbService.syntaxHighlight(d);
+          this.responses.unshift(res);
         });
         this.count++;
   }

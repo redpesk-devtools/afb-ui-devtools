@@ -52,13 +52,13 @@
         <nb-card [size]="'tiny'" accent="primary">
             <nb-card-header>QUESTIONS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="questions=[]"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
             <nb-card-body>
-                        <pre *ngFor="let question of questions">{{ question }}</pre>
+                        <pre *ngFor="let question of questions" [innerHTML]="question"></pre>
             </nb-card-body>
         </nb-card>
         <nb-card [size]="'tiny'" accent="primary">
             <nb-card-header>RESPONSES<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="responses=[]"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
             <nb-card-body>
-                <pre *ngFor="let response of responses">OK: {{ response | json }}</pre>     
+                <pre *ngFor="let response of responses" [innerHTML]="response"></pre>     
             </nb-card-body>
         </nb-card>
         <nb-card [size]="'tiny'" accent="primary">
