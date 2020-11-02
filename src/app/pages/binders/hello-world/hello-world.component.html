@@ -64,7 +64,7 @@
         <nb-card [size]="'tiny'" accent="primary">
             <nb-card-header>EVENTS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
             <nb-card-body id="outevt">
-                        <pre>OK:</pre>
+                        <pre *ngFor="let event of event$ | async" [innerHTML]="event"></pre>
             </nb-card-body>
         </nb-card>
     </div>

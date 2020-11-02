@@ -9,10 +9,12 @@ export interface AFBContext {
 }
 
 export interface AFBEvent {
-    action: string;
+    jtype: string;
     event: string;
-    value: string;
+    data: any;
 }
+
+
 
 export interface SocketStatus {
     connected: boolean;
@@ -28,7 +30,7 @@ export interface AFBApi {
     verbs: AFBVerb[];
 }
 
-export interface AFBApis extends Array<AFBApi> {}
+export interface AFBApis extends Array<AFBApi> { }
 
 // export interface AFBApis AFBApi[];
 
@@ -90,6 +92,7 @@ export class AFBWebSocketService {
                 this._wsConnectSubject.next(event);
                 this._isInitDone.next(true);
                 this._status.reconnect_attempt = 0;
+                // this._wsEventSubject.next(this.ws.onevent('*', this.Log(event)));
             },
             // onerror
             () => {
@@ -115,6 +118,10 @@ export class AFBWebSocketService {
         return null;
     }
 
+    Log(event: Event) {
+        console.log('event:', event);
+    }
+
     Disconnect() {
         // TODO : close all subjects
         this.ws.close();
@@ -123,7 +130,7 @@ export class AFBWebSocketService {
     /**
      * Send data to the ws server
      */
-    Send(method: string, params: object|string): Observable<any> {
+    Send(method: string, params: object | string): Observable<any> {
         const param = this.CheckQuery(params);
         return this._isInitDone.pipe(
             filter(done => done),
@@ -142,8 +149,8 @@ export class AFBWebSocketService {
         );
     }
 
-    CheckQuery(params: object|string) {
-        if (!params)
+    CheckQuery(params: object | string) {
+        if (!params || params === ' ')
             params = {};
         return typeof params === 'string' ? JSON.parse(params) : params;
     }
@@ -155,51 +162,33 @@ export class AFBWebSocketService {
         json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
             function (match) {
-            let cls = 'text-info';
-            if (/^"/.test(match)) {
-                if (/:$/.test(match)) {
-                cls = 'text-primary';
-            } else {
-                cls = 'text-success';
-            }
-            } else if (/true|false/.test(match)) {
-                cls = 'text-danger';
-            } else if (/null/.test(match)) {
-                cls = 'text-warning';
-        }
-        return '<span class="' + cls + '">' + match + '</span>';
-    });
-}
+                let cls = 'text-info';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'text-primary';
+                    } else {
+                        cls = 'text-success';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'text-danger';
+                } else if (/null/.test(match)) {
+                    cls = 'text-warning';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+    }
 
     /**
      * Receive data from opened websocket
      */
-    Subscribe(url: string, event: AFBEvent): Observable<any> {
-        // return Observable.create(
-        //     observer => {
-        //         this.ws.onmessage = (event: MessageEvent) => {
-        //             observer.next(event);
-        //         };
-        //     },
-        // );
+    OnEvent(eventName: string): Observable<AFBEvent> {
+         // Convert websocket Event based on callback to an Observable
         return Observable.create(
             observer => {
-                this._isInitDone.pipe(
-                    filter(done => done),
-                    switchMap(() => {
-                        return from(
-                            this.ws.call(url, event)
-                                .then((/*obj*/) => {
-                                    const eventId = url.split('/')[0] + '/' + (event.value ? event.value : event.event);
-                                    this.ws.onevent(eventId, (wsevent: any) => {
-                                        console.log(wsevent);
-                                        observer.next(wsevent.data);
-                                    });
-                                })
-                        );
-                    })
-                );
-            }
+                this.ws.onevent(eventName, (event: AFBEvent) => {
+                    observer.next(event);
+                });
+            },
         );
     }
 
@@ -231,12 +220,12 @@ export class AFBWebSocketService {
         results.forEach(value => {
             if (value.key !== 'monitor') {
                 const AFBVerbs2 = this._GetAFBVerbs(value);
-                const api = <AFBApi> {
-                    api : value.key,
+                const api = <AFBApi>{
+                    api: value.key,
                     title: value.value.info.title,
                     version: value.value.info.version,
                     description: value.value.info.description,
-                    verbs : AFBVerbs2,
+                    verbs: AFBVerbs2,
                 };
                 Apis.push(api);
             }
@@ -250,7 +239,7 @@ export class AFBWebSocketService {
         const verbs = Object.keys(value.value.paths);
         const paths = verbs.map(path => ({ path: path, verb: value.value.paths[path] }));
         paths.forEach(path => {
-            const verb = <AFBVerb> {
+            const verb = <AFBVerb>{
                 verb: path.path,
                 query: '',
                 description: path.verb.get.responses[200].description,
