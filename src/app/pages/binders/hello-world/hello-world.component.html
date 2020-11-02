@@ -44,15 +44,13 @@
             </nb-accordion-item-body>
         </nb-accordion-item>
     </nb-accordion>
-    </nb-card>
-        <!-- <pre>{{ verbs$ | async | json }}</pre>  -->
-       
+    </nb-card>  
     </div>
     <div class="col-7">
         <nb-card [size]="'tiny'" accent="primary">
             <nb-card-header>QUESTIONS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="questions=[]"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
             <nb-card-body>
-                        <pre *ngFor="let question of questions" [innerHTML]="question"></pre>
+                <pre *ngFor="let question of questions" [innerHTML]="question"></pre>
             </nb-card-body>
         </nb-card>
         <nb-card [size]="'tiny'" accent="primary">
@@ -63,8 +61,8 @@
         </nb-card>
         <nb-card [size]="'tiny'" accent="primary">
             <nb-card-header>EVENTS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
-            <nb-card-body id="outevt">
-                        <pre *ngFor="let event of event$ | async" [innerHTML]="event"></pre>
+            <nb-card-body>
+                <pre *ngFor="let event of event$ | async" [innerHTML]="event"></pre>
             </nb-card-body>
         </nb-card>
     </div>

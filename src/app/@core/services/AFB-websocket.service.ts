@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, from, ReplaySubject } from 'rxjs';
-import { catchError, filter, switchMap, map } from 'rxjs/operators';
+import { filter, switchMap, map } from 'rxjs/operators';
 import { AFB } from '../afb';
 
 export interface AFBContext {
@@ -59,7 +59,7 @@ export class AFBWebSocketService {
     private _statusSubject = <BehaviorSubject<SocketStatus>>new BehaviorSubject(this._status);
     private _isInitDone = <ReplaySubject<boolean>>new ReplaySubject(1);
     private afb: any;
-    response: object;
+    response: any;
 
     Init(base: string, initialToken?: string) {
 
@@ -118,10 +118,6 @@ export class AFBWebSocketService {
         return null;
     }
 
-    Log(event: Event) {
-        console.log('event:', event);
-    }
-
     Disconnect() {
         // TODO : close all subjects
         this.ws.close();
@@ -136,13 +132,12 @@ export class AFBWebSocketService {
             filter(done => done),
             switchMap(() => {
                 return from(this.ws.call(method, param)
-                    .then(
-                        (obj) => {
+                    .then((obj) => {
                             return obj;
                         },
-                        (err) => {
-                            return err;
-                        }
+                    ).catch((err) => {
+                        return (err);
+                    },
                     )
                 );
             })
@@ -230,7 +225,6 @@ export class AFBWebSocketService {
                 Apis.push(api);
             }
         });
-        console.log('apis', Apis);
         return Apis;
     }
 

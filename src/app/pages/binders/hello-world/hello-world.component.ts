@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription, Observable, BehaviorSubject } from 'rxjs';
-import { AFBWebSocketService, SocketStatus, AFBApi, AFBEvent } from '../../../@core/services/AFB-websocket.service';
+import { AFBWebSocketService, SocketStatus, AFBApi } from '../../../@core/services/AFB-websocket.service';
 
 
 @Component({
@@ -49,7 +49,6 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
     this.event$ = this._eventSubject.asObservable();
     this.afbService.OnEvent('*').subscribe(d => {
       this._eventArray.unshift(JSON.stringify(d));
-      console.log(this._eventArray);
       this._eventSubject.next(this._eventArray);
     });
   }

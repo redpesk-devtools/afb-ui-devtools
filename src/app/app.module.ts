@@ -24,9 +24,7 @@ import {
   NbWindowModule,
   NbLayoutModule,
 } from '@nebular/theme';
-// import { AfbWebSocketService } from './afbWebSocketService';
 import { AFBWebSocketService } from './@core/services/AFB-websocket.service';
-import { VerbsService } from '../app/@core/services/verbs.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -56,7 +54,6 @@ import { VerbsService } from '../app/@core/services/verbs.service';
   bootstrap: [AppComponent],
   providers: [
     AFBWebSocketService,
-    VerbsService,
   ],
 })
 export class AppModule {
