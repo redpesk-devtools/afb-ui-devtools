@@ -133,8 +133,8 @@ export class AFBWebSocketService {
             switchMap(() => {
                 return from(this.ws.call(method, param)
                     .then((obj) => {
-                            return obj;
-                        },
+                        return obj;
+                    },
                     ).catch((err) => {
                         return (err);
                     },
@@ -177,7 +177,7 @@ export class AFBWebSocketService {
      * Receive data from opened websocket
      */
     OnEvent(eventName: string): Observable<AFBEvent> {
-         // Convert websocket Event based on callback to an Observable
+        // Convert websocket Event based on callback to an Observable
         return Observable.create(
             observer => {
                 this.ws.onevent(eventName, (event: AFBEvent) => {

@@ -12,7 +12,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
     group: true,
   },
   {
-    title: 'Hello World',
+    title: 'Low can',
     icon: 'radio-button-on',
     link: '/pages/binders/hello-world',
   },

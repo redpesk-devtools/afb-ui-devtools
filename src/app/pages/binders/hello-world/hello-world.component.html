@@ -1,10 +1,10 @@
-<nb-card>
+<!-- <nb-card>
     <nb-card-body>
         <button nbButton hero shape="round" status="success" *ngIf="(wsStatus$|async).connected ; else disconnected">Binder WS Active'</button>
         <ng-template #disconnected><button nbButton shape="round" status="danger" (click)=afbService.Connect() >Binding WS Fail</button></ng-template>
         <button nbButton shape="round" id="monitoring">Debug/Monitoring</button>
     </nb-card-body>
-</nb-card>
+</nb-card> -->
 <div class="row" *ngIf="(wsStatus$|async)?.connected">
     <div class="col-5">
         <nb-card status="primary">
@@ -47,19 +47,19 @@
     </nb-card>  
     </div>
     <div class="col-7">
-        <nb-card [size]="'tiny'" accent="primary">
+        <nb-card size="tiny" accent="primary">
             <nb-card-header>QUESTIONS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="questions=[]"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
             <nb-card-body>
-                <pre *ngFor="let question of questions" [innerHTML]="question"></pre>
+                <pre *ngFor="let question of questions$ | async" [innerHTML]="question"></pre>
             </nb-card-body>
         </nb-card>
-        <nb-card [size]="'tiny'" accent="primary">
+        <nb-card size="medium" accent="primary">
             <nb-card-header>RESPONSES<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="responses=[]"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
             <nb-card-body>
-                <pre *ngFor="let response of responses" [innerHTML]="response"></pre>     
+                <pre *ngFor="let response of responses$ | async" [innerHTML]="response"></pre>     
             </nb-card-body>
         </nb-card>
-        <nb-card [size]="'tiny'" accent="primary">
+        <nb-card size="tiny" accent="primary">
             <nb-card-header>EVENTS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
             <nb-card-body>
                 <pre *ngFor="let event of event$ | async" [innerHTML]="event"></pre>
