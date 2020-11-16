@@ -4,7 +4,7 @@
       <nb-icon icon="menu-2-outline"></nb-icon>
     </a>
     <a class="logo" href="#" (click)="navigateHome()"> <span>Binder Web Interface</span> </a>
-    <button nbButton hero shape="round" status="success" *ngIf="(wsStatus$|async).connected ; else disconnected">Binder WS Active'</button>
+    <button nbButton hero shape="round" status="success" *ngIf="(wsStatus$|async).connected ; else disconnected">Binder WS Active</button>
     <ng-template #disconnected><button nbButton shape="round" status="danger" (click)=afbService.Connect() >Binding WS Fail</button></ng-template>
     <button nbButton shape="round" id="monitoring">Debug/Monitoring</button>
   </div>

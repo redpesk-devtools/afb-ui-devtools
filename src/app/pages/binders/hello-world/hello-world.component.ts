@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription, Observable, BehaviorSubject, Subject } from 'rxjs';
 import { AFBWebSocketService, SocketStatus, AFBApi } from '../../../@core/services/AFB-websocket.service';
+import { NbToastrService } from '@nebular/theme';
 
 
 @Component({
@@ -18,7 +19,7 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   el;
   evtidx = 0;
   count: number;
-  query: string = '';
+  queries: Array<string> = [];
   host: string = 'localhost';
   port: string = '1234';
 
@@ -37,7 +38,8 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   // urlws = "ws://" + window.location.host + "/api";
   // urlws = "ws://localhost:8000/api?x-afbService-token=mysecret"
 
-  constructor(private afbService: AFBWebSocketService) {
+  constructor(private afbService: AFBWebSocketService,
+    private toastrService: NbToastrService) {
     // afbService.Init('api', 'HELLO');
 
   }
@@ -62,17 +64,35 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
 
 
   callBinder(api: string, verb: string, query: string) {
-    // debugger
-    this.afbService.Send(api + verb, query).subscribe(d => {
-      this.status = d.response;
-      const req = this.count + ': ws://' + this.host + ':' + this.port + '/api/' + api + verb + '?query=' + query;
-      this.questions.unshift(this.afbService.syntaxHighlight(req));
-      this._questionsSubject.next(this.questions);
-      const res = [this.count + ': OK :' + this.afbService.syntaxHighlight(d)];
-      this.responses.unshift(res);
-      this._responsesSubject.next(this.responses);
-      this.count++;
-    });
+    if (this.afbService.CheckIfJson(query) === true) {
+      this.afbService.Send(api + verb, query).subscribe(d => {
+        this.status = d.response;
+        const req = this.count + ': ws://' + this.host + ':' + this.port + '/api/' + api + verb + '?query=' + query;
+        this.questions.unshift(this.afbService.syntaxHighlight(req));
+        this._questionsSubject.next(this.questions);
+        const res = [this.count + ': OK :' + this.afbService.syntaxHighlight(d)];
+        this.responses.unshift(res);
+        this._responsesSubject.next(this.responses);
+        this.count++;
+      });
+    } else {
+      this.toastrService.show('Invalid parameters: should be JSON type. Minimum query: {}');
+    }
+  }
+
+  ResetResponses() {
+    this.responses = [];
+    this._responsesSubject.next(this.responses);
+  }
+
+  ResetQuestions() {
+    this.questions = [];
+    this._questionsSubject.next(this.questions);
+  }
+
+  ResetEvents() {
+    this._eventArray = [];
+    this._eventSubject.next(this._eventArray);
   }
 
   // OnEvent(eventName: string) {

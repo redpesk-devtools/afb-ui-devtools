@@ -6,7 +6,7 @@
     </nb-card-body>
 </nb-card> -->
 <div class="row" *ngIf="(wsStatus$|async)?.connected">
-    <div class="col-5">
+    <div class="col-4">
         <nb-card status="primary">
             <nb-card-header>APIS & VERBS</nb-card-header>
         <nb-accordion multi *ngFor="let api of (verbs$ | async)">
@@ -16,16 +16,17 @@
                 </nb-accordion-item-header>
             <nb-accordion-item-body>
                 <nb-accordion multi >
-                    <nb-accordion-item *ngFor="let verb of api.verbs">
+                    <nb-accordion-item *ngFor="let verb of api.verbs; let i=index">
                         <nb-accordion-item-header class="text-primary">
                             {{ verb.verb }}
                         </nb-accordion-item-header>
                     <nb-accordion-item-body>
                         <p *ngIf="verb.description">Description: {{ verb.description }}</p>
                         <p *ngIf="verb.query">Suggested query: {{ verb.query }}</p>
-                        <textarea nbInput fullWidth [(ngModel)]="query"></textarea>
-                        <button nbButton shape="round" ghost status="primary" size="small" class="float-right" (click)="query=''">Reset</button>
-                        <button nbButton hero shape="round" status="primary" size="small" class="float-right" (click)="callBinder(api.title, verb.verb, query)">Test</button>
+                        <p>Enter Parameters :</p>
+                        <textarea nbInput fullWidth [(ngModel)]="queries[i]"></textarea>
+                        <button nbButton shape="round" ghost status="primary" size="small" class="float-right" (click)="queries[i]=''">Reset</button>
+                        <button nbButton hero shape="round" status="primary" size="small" class="float-right" (click)="callBinder(api.title, verb.verb, queries[i])">Test</button>
                     </nb-accordion-item-body>
                 </nb-accordion-item>
                 </nb-accordion>
@@ -46,21 +47,21 @@
     </nb-accordion>
     </nb-card>  
     </div>
-    <div class="col-7">
+    <div class="col-8">
         <nb-card size="tiny" accent="primary">
-            <nb-card-header>QUESTIONS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="questions=[]"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
+            <nb-card-header>QUESTIONS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="ResetQuestions()"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
             <nb-card-body>
                 <pre *ngFor="let question of questions$ | async" [innerHTML]="question"></pre>
             </nb-card-body>
         </nb-card>
-        <nb-card size="medium" accent="primary">
-            <nb-card-header>RESPONSES<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="responses=[]"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
+        <nb-card size="small" accent="primary">
+            <nb-card-header>RESPONSES<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="ResetResponses()"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
             <nb-card-body>
                 <pre *ngFor="let response of responses$ | async" [innerHTML]="response"></pre>     
             </nb-card-body>
         </nb-card>
         <nb-card size="tiny" accent="primary">
-            <nb-card-header>EVENTS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
+            <nb-card-header>EVENTS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="ResetEvents()"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
             <nb-card-body>
                 <pre *ngFor="let event of event$ | async" [innerHTML]="event"></pre>
             </nb-card-body>

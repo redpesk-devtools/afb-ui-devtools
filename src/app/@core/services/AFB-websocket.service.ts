@@ -144,9 +144,18 @@ export class AFBWebSocketService {
         );
     }
 
+    CheckIfJson(str: string): boolean {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
+
     CheckQuery(params: object | string) {
-        if (!params || params === ' ')
-            params = {};
+        if (!params || params === undefined || (typeof params === 'string' && this.CheckIfJson(params) === false))
+            params = '{}';
         return typeof params === 'string' ? JSON.parse(params) : params;
     }
 

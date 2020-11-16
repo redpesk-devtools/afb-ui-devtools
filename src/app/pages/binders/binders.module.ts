@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { ThemeModule } from '../../@theme/theme.module';
 import { HelloWorldComponent } from './hello-world/hello-world.component';
-import { NbCardModule, NbButtonModule, NbAccordionModule, NbInputModule, NbIconModule } from '@nebular/theme';
+import { NbCardModule, NbButtonModule, NbAccordionModule, NbInputModule, NbIconModule, NbToastrModule } from '@nebular/theme';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
     NbAccordionModule,
     NbIconModule,
     NbInputModule,
+    NbToastrModule,
     FormsModule,
   ],
   declarations: [
