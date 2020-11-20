@@ -4,9 +4,9 @@
       <nb-icon icon="menu-2-outline"></nb-icon>
     </a>
     <a class="logo" href="#" (click)="navigateHome()"> <span>Binder Web Interface</span> </a>
-    <button nbButton hero shape="round" status="success" *ngIf="(wsStatus$|async).connected ; else disconnected">Binder WS Active</button>
-    <ng-template #disconnected><button nbButton shape="round" status="danger" (click)=afbService.Connect() >Binding WS Fail</button></ng-template>
-    <button nbButton shape="round" id="monitoring">Debug/Monitoring</button>
+    <button nbButton shape="round" status="success" *ngIf="(wsStatus$|async).connected ; else disconnected">Binder WS Active</button>
+    <ng-template #disconnected><button nbButton shape="round" status="danger" (click)="Connect()">Binding WS Fail</button></ng-template>
+    <button nbButton shape="round" (click)="OpenMonitoring()" id="monitoring">Debug/Monitoring</button>
   </div>
   <!-- <nb-select [selected]="currentTheme" (selectedChange)="changeTheme($event)" status="primary">
     <nb-option *ngFor="let theme of themes" [value]="theme.value"> {{ theme.name }}</nb-option>

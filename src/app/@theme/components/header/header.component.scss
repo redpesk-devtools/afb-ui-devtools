@@ -50,3 +50,14 @@
     }
   }
 }
+
+img {
+  padding-top: 10%;
+  height: 80%;
+}
+
+@media screen and (max-width: 1300px) {
+  img {
+    display: none;
+  }
+}

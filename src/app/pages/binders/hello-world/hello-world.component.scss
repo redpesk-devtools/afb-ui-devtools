@@ -10,12 +10,24 @@ pre {
 }
 
 nb-card {
-  margin: 0;
+  margin: 5px;
+  background-color: transparent;
+  border: none;
+}
+
+nb-card-body {
+  box-shadow: 0 0.5rem 1rem 0 rgba(44, 51, 73, 0.1);
+  border-radius: 0.25rem;
+}
+
+ng-template {
+  padding: 10px;
 }
 
 nb-accordion {
   margin: 0;
   padding: 0;
+  border: none !important;
 }
 
 nb-accordion-item {
@@ -23,6 +35,28 @@ nb-accordion-item {
   padding: 0;
 }
 
+nb-accordion-item-header {
+  display: flex;
+  direction: row;
+}
+
 div {
   margin: 0;
+}
+
+span {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.verbName,
+.apiName {
+  pointer-events: none;
+  text-transform: none !important;
+}
+
+@media screen and (max-width: 1500px) {
+  .apiName {
+    display: none;
+  }
 }

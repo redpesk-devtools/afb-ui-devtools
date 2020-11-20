@@ -32,8 +32,6 @@ export interface AFBApi {
 
 export interface AFBApis extends Array<AFBApi> { }
 
-// export interface AFBApis AFBApi[];
-
 export interface AFBVerb {
     verb: string;
     query: string;
@@ -62,9 +60,6 @@ export class AFBWebSocketService {
     response: any;
 
     Init(base: string, initialToken?: string) {
-
-        // keep it ?
-        // this.context = <AFBContext>{ token: initialToken, uuid: undefined };
         this.afb = new AFB({
             base: base,
             token: initialToken
@@ -92,7 +87,6 @@ export class AFBWebSocketService {
                 this._wsConnectSubject.next(event);
                 this._isInitDone.next(true);
                 this._status.reconnect_attempt = 0;
-                // this._wsEventSubject.next(this.ws.onevent('*', this.Log(event)));
             },
             // onerror
             () => {

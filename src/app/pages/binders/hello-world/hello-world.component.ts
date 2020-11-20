@@ -19,7 +19,7 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   el;
   evtidx = 0;
   count: number;
-  queries: Array<string> = [];
+  query: Array<Array<string>> = [[]];
   host: string = 'localhost';
   port: string = '1234';
 
@@ -35,18 +35,11 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   responses: Array<Array<String>>;
   event$: Observable<Array<string>>;
 
-  // urlws = "ws://" + window.location.host + "/api";
-  // urlws = "ws://localhost:8000/api?x-afbService-token=mysecret"
-
   constructor(private afbService: AFBWebSocketService,
     private toastrService: NbToastrService) {
-    // afbService.Init('api', 'HELLO');
-
   }
 
   ngOnInit(): void {
-    // this.afbService.SetURL(this.host, this.port);
-    // this.afbService.Connect();
     this.wsStatus$ = this.afbService.Status$;
     this.verbs$ = this.afbService.Discover();
     this.questions = [];
@@ -56,12 +49,11 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
     this.count = 0;
     this.event$ = this._eventSubject.asObservable();
     this.afbService.OnEvent('*').subscribe(d => {
-      this._eventArray.unshift(this.evtidx + ' : ' + JSON.stringify(d));
+      this._eventArray.unshift(this.evtidx + ' : ' + this.afbService.syntaxHighlight(d));
       this.evtidx++;
       this._eventSubject.next(this._eventArray);
     });
   }
-
 
   callBinder(api: string, verb: string, query: string) {
     if (this.afbService.CheckIfJson(query) === true) {
@@ -80,29 +72,29 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
     }
   }
 
-  ResetResponses() {
+  setQuery(i: any, j: any) {
+    if (!this.query[i]) {
+      this.query[i] = [];
+    }
+    if (!this.query[i][j]) {
+      this.query[i][j] = '{}';
+    }
+  }
+
+  resetResponses() {
     this.responses = [];
     this._responsesSubject.next(this.responses);
   }
 
-  ResetQuestions() {
+  resetQuestions() {
     this.questions = [];
     this._questionsSubject.next(this.questions);
   }
 
-  ResetEvents() {
+  resetEvents() {
     this._eventArray = [];
     this._eventSubject.next(this._eventArray);
   }
-
-  // OnEvent(eventName: string) {
-  //   this.afbService.OnEvent(eventName).subscribe((evt: any) => {
-  //     console.log(evt);
-  //   });
-  //   // this.afbService.OnEvent(eventName, (evt: any) => {
-  //   //   console.log(evt);
-  //   // });
-  // }
 
   closeSocket() {
     this.afbService.Disconnect();

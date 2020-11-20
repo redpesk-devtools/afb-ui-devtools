@@ -13,6 +13,7 @@ import { AFBWebSocketService, SocketStatus } from '../../../@core/services/AFB-w
 export class HeaderComponent implements OnInit, OnDestroy {
 
   private destroy$: Subject<void> = new Subject<void>();
+  windowMonitoring;
 
   themes = [
     {
@@ -59,6 +60,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  Connect() {
+    this.afbService.Connect();
+  }
+
+  OpenMonitoring() {
+    this.windowMonitoring = window.open('/monitoring/monitor.html', '_monitor_ctl');
   }
 
   changeTheme(themeName: string) {

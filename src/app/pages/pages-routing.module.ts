@@ -2,7 +2,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 
 import { PagesComponent } from './pages.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { HelloWorldComponent } from './binders/hello-world/hello-world.component';
 
 const routes: Routes = [{
@@ -10,16 +9,12 @@ const routes: Routes = [{
   component: PagesComponent,
   children: [
     {
-      path: 'dashboard',
-      component: DashboardComponent,
-    },
-    {
       path: '',
-      redirectTo: 'dashboard',
+      redirectTo: 'binders',
       pathMatch: 'full',
     },
     {
-      path: 'binders/hello-world',
+      path: 'binders',
       component: HelloWorldComponent,
     },
   ],
