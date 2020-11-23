@@ -57,7 +57,6 @@ export class AFBWebSocketService {
     private _statusSubject = <BehaviorSubject<SocketStatus>>new BehaviorSubject(this._status);
     private _isInitDone = <ReplaySubject<boolean>>new ReplaySubject(1);
     private afb: any;
-    response: any;
 
     Init(base: string, initialToken?: string) {
         this.afb = new AFB({
