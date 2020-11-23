@@ -69,7 +69,6 @@ export class AFBWebSocketService {
         this.wsEvent$ = this._wsEventSubject.asObservable();
         this.Status$ = this._statusSubject.asObservable();
         this.InitDone$ = this._isInitDone.asObservable();
-        this.response = {};
     }
 
     SetURL(location: string, port?: string) {
