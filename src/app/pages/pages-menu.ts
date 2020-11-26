@@ -2,18 +2,13 @@ import { NbMenuItem } from '@nebular/theme';
 
 export const MENU_ITEMS: NbMenuItem[] = [
   {
-    title: 'Dashboard',
-    icon: 'home',
-    link: '/pages/dashboard',
+    title: 'Binders',
+    link: '/pages/binders',
     home: true,
   },
   {
-    title: 'Binders',
-    group: true,
-  },
-  {
-    title: 'Hello World',
-    icon: 'radio-button-on',
-    link: '/pages/binders/hello-world',
+    title: 'Documentation',
+    url: 'https://docs.redpesk.bzh/',
+    target: '_blank',
   },
 ];

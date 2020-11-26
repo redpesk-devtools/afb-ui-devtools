@@ -1,37 +1,53 @@
-
-<nb-card>
-    <!-- [ngClass]="(step=='step1')?'my-class1':'my-class2'"<nb-card-body> -->
-    <nb-card-body>
-        <button nbButton shape="round" status="success" *ngIf="(wsStatus$|async).connected ; else disconnected">Binder WS Active'</button>
-        <ng-template #disconnected><button nbButton shape="round" status="danger" (click)=afbService.Connect() >Binding WS Fail</button></ng-template>
-        <button nbButton shape="round" id="monitoring">Debug/Monitoring</button>
-    </nb-card-body>
-</nb-card>
-<div class="row">
-    <div class="col-4">
-         <nb-accordion multi>
-            <nb-accordion-item *ngFor="let verb of verbs">
-                <nb-accordion-item-header>
-                    {{ verb.action }}
-                </nb-accordion-item-header>
-                <nb-accordion-item-body *ngIf="(wsStatus$|async)?.connected">
-                    <button nbButton shape="round" (click)="callBinder(verb.api,verb.verb,verb.query)">{{ verb.action }}</button>
-                </nb-accordion-item-body>
-            </nb-accordion-item>
-        </nb-accordion>
+<div class="row" *ngIf="(wsStatus$|async)?.connected">
+    <div class="col-lg-4 col-md-6 col-sm-12">
+        <nb-card *ngFor="let api of (verbs$ | async); let i=index">
+            <nb-card-header>{{ api.title | uppercase }}<nb-icon [nbPopover]="rawMonitorGet" nbPopoverPlacement="right" class="float-right" status="primary" icon="question-mark-circle-outline"></nb-icon>
+                <ng-template #rawMonitorGet>
+                    <nb-card status="danger">
+                        <nb-card-header>
+                            <span *ngIf="api.description">Description: {{ api.description }}</span>
+                            <p>Raw API response:</p>
+                            <pre [innerHTML]="api | json"></pre>
+                        </nb-card-header>   
+                    </nb-card>
+                </ng-template>
+            </nb-card-header>
+                <nb-accordion>
+                    <nb-accordion-item *ngFor="let verb of api.verbs; let j=index" [ng-init]="setQuery(i,j)">
+                        <nb-accordion-item-header>
+                            <button nbButton size="small" outline class="apiName" status="primary" >{{api.title}}</button>
+                            <button nbButton size="small" class="verbName" status="primary" >{{verb.verb}}</button>
+                        </nb-accordion-item-header>
+                        <nb-accordion-item-body>
+                            <p *ngIf="verb.description">Description: {{ verb.description }}</p>
+                            <p *ngIf="verb.query">Suggested query: {{ verb.query }}</p>
+                            <p>Enter Parameters :</p>
+                            <textarea nbInput fullWidth [(ngModel)]="query[i][j]"></textarea>
+                            <button nbButton shape="round" ghost status="primary" size="small" class="float-right" (click)="query[i][j]='{}'">Reset</button>
+                            <button nbButton shape="round" status="primary" size="small" class="float-right" (click)="callBinder(api.title, verb.verb, query[i][j])">Test</button>
+                        </nb-accordion-item-body>
+                    </nb-accordion-item>
+                </nb-accordion>
+            </nb-card>  
     </div>
-    <div class="col-8" *ngIf="(wsStatus$|async)?.connected">
-        <nb-card>
-            <nb-card-header>Question</nb-card-header>
-            <nb-card-body id="question"></nb-card-body>
+    <div class="col-lg-8 col-md-6 col-sm-12">
+        <nb-card size="tiny">
+            <nb-card-header>QUESTIONS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="resetQuestions()"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
+            <nb-card-body class="bg-white">
+                <pre *ngFor="let question of questions$ | async" [innerHTML]="question"></pre>
+            </nb-card-body>
         </nb-card>
-        <nb-card>
-            <nb-card-header>Response</nb-card-header>
-            <nb-card-body id="output"></nb-card-body>
+        <nb-card size="small">
+            <nb-card-header>RESPONSES<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="resetResponses()"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
+            <nb-card-body class="bg-white">
+                <pre *ngFor="let response of responses$ | async" [innerHTML]="response"></pre>     
+            </nb-card-body>
         </nb-card>
-        <nb-card>
-            <nb-card-header>Events</nb-card-header>
-            <nb-card-body id="outevt"></nb-card-body>
+        <nb-card size="tiny">
+            <nb-card-header>EVENTS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="resetEvents()"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
+            <nb-card-body class="bg-white">
+                <pre *ngFor="let event of event$ | async" [innerHTML]="event"></pre>
+            </nb-card-body>
         </nb-card>
     </div>
 </div>
