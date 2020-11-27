@@ -20,5 +20,10 @@
     "../src/*.ts",
     "../src/**/*.d.ts",
     "../node_modules/@nebular/**/*.ts"
+  ],
+  "exclude": [
+    "test.ts",
+    "**/*.spec.ts",
+    "../node_modules/@nebular/**/*.spec.ts"
   ]
 }
