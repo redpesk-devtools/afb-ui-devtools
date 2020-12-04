@@ -51,9 +51,13 @@
   }
 }
 
+.rp-image {
+  height: 50px;
+}
+
 img {
-  padding-top: 10%;
-  height: 80%;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 @media screen and (max-width: 1300px) {

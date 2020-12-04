@@ -1,53 +1,143 @@
-<div class="row" *ngIf="(wsStatus$|async)?.connected">
-    <div class="col-lg-4 col-md-6 col-sm-12">
-        <nb-card *ngFor="let api of (verbs$ | async); let i=index">
-            <nb-card-header>{{ api.title | uppercase }}<nb-icon [nbPopover]="rawMonitorGet" nbPopoverPlacement="right" class="float-right" status="primary" icon="question-mark-circle-outline"></nb-icon>
-                <ng-template #rawMonitorGet>
-                    <nb-card status="danger">
-                        <nb-card-header>
-                            <span *ngIf="api.description">Description: {{ api.description }}</span>
-                            <p>Raw API response:</p>
-                            <pre [innerHTML]="api | json"></pre>
-                        </nb-card-header>   
-                    </nb-card>
-                </ng-template>
-            </nb-card-header>
-                <nb-accordion>
-                    <nb-accordion-item *ngFor="let verb of api.verbs; let j=index" [ng-init]="setQuery(i,j)">
-                        <nb-accordion-item-header>
-                            <button nbButton size="small" outline class="apiName" status="primary" >{{api.title}}</button>
-                            <button nbButton size="small" class="verbName" status="primary" >{{verb.verb}}</button>
-                        </nb-accordion-item-header>
-                        <nb-accordion-item-body>
-                            <p *ngIf="verb.description">Description: {{ verb.description }}</p>
-                            <p *ngIf="verb.query">Suggested query: {{ verb.query }}</p>
-                            <p>Enter Parameters :</p>
-                            <textarea nbInput fullWidth [(ngModel)]="query[i][j]"></textarea>
-                            <button nbButton shape="round" ghost status="primary" size="small" class="float-right" (click)="query[i][j]='{}'">Reset</button>
-                            <button nbButton shape="round" status="primary" size="small" class="float-right" (click)="callBinder(api.title, verb.verb, query[i][j])">Test</button>
-                        </nb-accordion-item-body>
+<div class="row m-0 p-0 scrollheight" *ngIf="(wsStatus$|async)?.connected">
+    <div class="col-lg-4 col-md-6 col-sm-12 colDisplay">
+        <div class="scrollheight" *ngIf="(info$ | async) as infoVerb">
+            <div *ngIf="(verbs$ | async) as allVerbs">
+            <nb-card *ngIf="infoVerb.length > 0; else disabled">
+                <nb-toggle status="primary" class="ml-auto" [(checked)]="checked">Advanced</nb-toggle>
+            </nb-card>
+            <ng-template #disabled>
+                <nb-card>
+                    <nb-toggle status="primary" disabled class="ml-auto" [(checked)]="checked">Advanced</nb-toggle>
+                </nb-card>
+            </ng-template>
+        <div *ngIf="checked || infoVerb.length === 0; else info">
+            <nb-accordion multi class="mx-0 p-0" *ngFor="let apiMonitor of allVerbs; let i=index">
+                <nb-accordion-item class="mr-0 p-0 bg-transparent" expanded=true>
+                    <nb-accordion-item-header class="mr-0 p-0">
+                       <div class="infoDisplay">
+                            <a nbButton size="medium" ghost class="verbName">{{ apiMonitor.title | uppercase }}</a> 
+                            <a nbPopover="{{ apiMonitor.description}}" nbPopoverTrigger="hover" class="caption px-2">{{ apiMonitor.description }}</a>
+                        </div>
+                    </nb-accordion-item-header>
+                    <nb-accordion-item-body>
+                    <nb-accordion multi class="mr-0 p-0">
+                        <nb-accordion-item class="m-0 p-0" *ngFor="let verb of apiMonitor.verbs; let k=index" j="0" [ng-init]="setQuery(i,j,k)">
+                            <nb-accordion-item-header class="mr-0 p-0">
+                                <nb-card class="verbDisplay">
+                                    <div class="infoDisplay">
+                                        <a nbButton status="primary" size="tiny" class="verbName">{{verb.verb}}</a>
+                                    </div>
+                            </nb-card>
+                            </nb-accordion-item-header>
+                            <nb-accordion-item-body>
+                                <div class="queryDisplay">
+                                 <label>Query :</label>
+                                <textarea nbInput fullWidth class="font-weight-light" [(ngModel)]="query[i][j][k]"></textarea>
+                                <button nbButton shape="round" status="primary" size="small" class="float-right" (click)="callBinder(apiMonitor.api, verb.verb, query[i][j][k])">Send</button>
+                            </div>
+                            </nb-accordion-item-body>
+                        </nb-accordion-item>
+                    </nb-accordion>
+                    </nb-accordion-item-body>
+                </nb-accordion-item>
+            </nb-accordion>
+        </div>
+
+        <ng-template #info>
+            <nb-accordion multi class="mx-0 p-0" *ngFor="let api of infoVerb; let i=index">
+                <nb-accordion-item class="mr-0 p-0 bg-transparent" *ngIf="api.info.metadata" expanded=true>
+                    <nb-accordion-item-header class="mr-0 p-0">
+                            <div class="infoDisplay">
+                                <a nbButton size="medium" ghost class="verbName">{{ api.info.metadata.uid | uppercase }}</a> 
+                                <a nbPopover="{{ api.info.metadata.info}}" nbPopoverTrigger="hint" class="caption px-2">{{ api.info.metadata.info}}</a>
+                            </div>
+                    </nb-accordion-item-header>
+                        <nb-accordion-item-body class="m-0 p-0">
+                            <div class="statusDisplay" *ngIf="api.info.metadata.status">
+                                <div class="d-inline-block ml-3 text-left mt-0 pt-0" *ngFor="let statusApiItem of api.info.metadata.status | keyvalue">
+                                    <a nbButton inactive size="tiny" class="verbName">{{statusApiItem.key}}</a>
+                                    <a nbButton ghost size="tiny" nbPopover="{{ statusApiItem.value }}" nbPopoverTrigger="hint" class="caption px-2">{{ statusApiItem.value}}</a>
+                                </div>
+                            </div>
+                  <nb-accordion multi class="mr-0 p-0">
+                    <nb-accordion-item class="mr-0 p-0" *ngFor="let group of api.info.groups; let j=index" expanded=true #group>
+                        <nb-accordion-item-header class="mr-0 p-0">
+                            <div class="infoDisplay">
+                                <a nbButton ghost status="primary" class="verbName">{{ group.uid | uppercase }}</a>
+                                <a nbPopover="{{group.info}}" nbPopoverTrigger="hover" class="caption px-2">{{ group.info }}</a>
+                            </div>
+                    </nb-accordion-item-header>
+                    <nb-accordion-item-body class="m-0 p-0">
+                        <div class="d-inline statusDisplay" *ngIf="group.status">
+                            <div class="d-inline-block ml-3 text-left mt-0 pt-0" *ngFor="let statusItem of group.status | keyvalue">
+                                <a nbButton inactive size="tiny" class="verbName">{{statusItem.key}}</a>
+                                <a nbButton ghost size="tiny" nbPopover="{{ statusItem.value }}" nbPopoverTrigger="hover" class="caption px-2">{{ statusItem.value}}</a>
+                            </div>
+                        </div>
+                        
+                            
+                    <nb-accordion class="mr-0 p-0">
+                        <nb-accordion-item class="m-0 p-0" *ngFor="let verb of group.verbs; let k=index" [ng-init]="setQuery(i,j,k)">
+                            <nb-accordion-item-header class="mr-0 p-0">
+                                <nb-card class="verbDisplay">
+                                    <div class="infoDisplay">
+                                        <a nbButton status="primary" size="tiny" class="verbName">{{verb.uid}}</a>
+                                        <a nbPopover="{{verb.info}}" nbPopoverTrigger="hover" class="caption px-2" *ngIf="verb.info">{{verb.info}}</a>
+                                    </div>
+                            </nb-card>
+                            </nb-accordion-item-header>
+                            <nb-accordion-item-body class="m-0 p-0">
+                                <div class="queryDisplay">
+                                    <div class="actionDisplay" *ngIf="verb.usage">
+                                    <button size="tiny" status="primary" *ngFor="let action of verb.usage.action" outline nbButton size="tiny" (click)="query[i][j][k]=getAction(action); expanded=true">{{ action }}</button>
+                                    <a nbButton outline size="tiny" *ngIf="verb.sample !== undefined && verb.sample.length > 0" status="info" (click)="show = !show;">Samples</a>
+                                </div>
+                                <nb-card *ngIf="show">
+                                    <button nbButton size="tiny" *ngFor="let sample of verb.sample" nbPopover="{{sample | json}}" nbPopoverTrigger="hint" class="d-inline-block font-weight-normal text-lowercase text-left text-truncate" (click)="query[i][j][k]=getExample(sample)">{{ sample | json }}</button>
+                                </nb-card>
+                                <label>Query :</label>
+                                <textarea nbInput fullWidth class="font-weight-light" [(ngModel)]="query[i][j][k]" [placeholder]="verb.usage ? getUsage(action, verb.usage) : ''"></textarea>
+                                <button nbButton shape="round" status="primary" size="tiny" class="float-right" (click)="!verb.verb ? callBinder(api.api, verb.uid, query[i][j][k]) : callBinder(api.api, verb.verb, query[i][j][k])">Send</button>
+                            </div>
+                            </nb-accordion-item-body>
+                        </nb-accordion-item>
+                    </nb-accordion>
+                </nb-accordion-item-body>
                     </nb-accordion-item>
-                </nb-accordion>
-            </nb-card>  
+                    </nb-accordion>
+                </nb-accordion-item-body>
+            </nb-accordion-item>
+            </nb-accordion>
+        </ng-template>
+
+
+
+        <ng-template #advanced>
+            
+        </ng-template>
+        </div>
+        </div>
     </div>
-    <div class="col-lg-8 col-md-6 col-sm-12">
-        <nb-card size="tiny">
-            <nb-card-header>QUESTIONS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="resetQuestions()"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
-            <nb-card-body class="bg-white">
-                <pre *ngFor="let question of questions$ | async" [innerHTML]="question"></pre>
-            </nb-card-body>
-        </nb-card>
-        <nb-card size="small">
-            <nb-card-header>RESPONSES<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="resetResponses()"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
-            <nb-card-body class="bg-white">
-                <pre *ngFor="let response of responses$ | async" [innerHTML]="response"></pre>     
-            </nb-card-body>
-        </nb-card>
-        <nb-card size="tiny">
-            <nb-card-header>EVENTS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="resetEvents()"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
-            <nb-card-body class="bg-white">
-                <pre *ngFor="let event of event$ | async" [innerHTML]="event"></pre>
-            </nb-card-body>
-        </nb-card>
+    <div class="col-lg-8 col-md-6 col-sm-12 colDisplay">
+        <div class="output sticky-top scrollheight">
+            <nb-card size="tiny">
+                <nb-card-header class="m-0 p-0">QUESTIONS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="resetQuestions()"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
+                        <nb-card-body class="bg-white">
+                            <pre *ngFor="let question of questions$ | async" [innerHTML]="question"></pre>
+                        </nb-card-body>
+            </nb-card>
+            <nb-card size="small">
+                <nb-card-header class="m-0 p-0">RESPONSES<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="resetResponses()"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
+                <nb-card-body class="bg-white">
+                    <pre *ngFor="let response of responses$ | async" [innerHTML]="response"></pre>     
+                </nb-card-body>
+            </nb-card>
+            <nb-card size="small">
+                <nb-card-header class="m-0 p-0">EVENTS<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="resetEvents()"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
+                <nb-card-body class="bg-white">
+                    <pre *ngFor="let event of event$ | async" [innerHTML]="event"></pre>
+                </nb-card-body>
+            </nb-card>
+        </div>
     </div>
 </div>

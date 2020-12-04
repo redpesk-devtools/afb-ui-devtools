@@ -1,6 +1,9 @@
 @import '../../styles/themes';
 
 @include nb-install-component() {
+  height: 0;
+  margin: 0;
+  padding: 0;
   width: 100%;
   display: flex;
   justify-content: space-between;

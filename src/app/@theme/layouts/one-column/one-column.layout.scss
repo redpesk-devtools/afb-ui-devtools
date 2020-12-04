@@ -7,3 +7,30 @@
     padding-top: nb-theme(layout-padding-top);
   }
 }
+
+.rp-background {
+  background-image: url('../../../../assets/images/background_iot_bzh_light.jpg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+::ng-deep .nb-theme-default nb-layout-header.fixed ~ .layout-container {
+  padding-top: 4rem;
+}
+
+::ng-deep .nb-theme-default nb-layout-header nav {
+  height: 4rem !important;
+}
+
+::ng-deep .nb-theme-default .menu-sidebar .scrollable {
+  padding-top: 0 !important;
+}
+
+nb-layout-header {
+  height: 4rem !important;
+}
+
+nav {
+  height: 4rem !important;
+}

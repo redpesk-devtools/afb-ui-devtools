@@ -1,3 +1,29 @@
+/**
+ * @license
+ * Copyright (C) 2019-2020 IoT.bzh Company
+ * Contact: https://www.iot.bzh/licensing
+ *
+ * This file is part of the rp-webserver module of the RedPesk project.
+ *
+ * $RP_BEGIN_LICENSE$
+ * Commercial License Usage
+ *  Licensees holding valid commercial IoT.bzh licenses may use this file in
+ *  accordance with the commercial license agreement provided with the
+ *  Software or, alternatively, in accordance with the terms contained in
+ *  a written agreement between you and The IoT.bzh Company. For licensing terms
+ *  and conditions see https://www.iot.bzh/terms-conditions. For further
+ *  information use the contact form at https://www.iot.bzh/contact.
+ *
+ * GNU General Public License Usage
+ *  Alternatively, this file may be used under the terms of the GNU General
+ *  Public license version 3. This license is as published by the Free Software
+ *  Foundation and appearing in the file LICENSE.GPLv3 included in the packaging
+ *  of this file. Please review the following information to ensure the GNU
+ *  General Public License requirements will be met
+ *  https://www.gnu.org/licenses/gpl-3.0.html.
+ * $RP_END_LICENSE$
+ */
+
 @import '~@nebular/theme/styles/global/breakpoints';
 
 button {
@@ -7,6 +33,7 @@ button {
 pre {
   overflow: hidden;
   font-size: 0.75rem;
+  line-height: 1rem !important;
 }
 
 nb-card {
@@ -15,33 +42,95 @@ nb-card {
   border: none;
 }
 
-nb-card-body {
-  box-shadow: 0 0.5rem 1rem 0 rgba(44, 51, 73, 0.1);
-  border-radius: 0.25rem;
-}
-
 ng-template {
   padding: 10px;
 }
 
 nb-accordion {
   margin: 0;
-  padding: 0;
-  border: none !important;
+  box-shadow: none !important;
 }
 
 nb-accordion-item {
+  margin-bottom: 7px;
+}
+
+textarea {
+  line-height: 1rem !important;
+  font-size: 0.75rem !important;
+}
+
+.link {
+  text-decoration: initial;
+}
+
+nb-accordion-item-header {
+  padding: 0.3rem 1.5rem 0.3rem  1rem !important;
+  overflow: clip;
+  // pointer-events: none;
+}
+
+.verbDisplay {
+  width: 100%;
+  display: inline-block;
+  padding-left: 1rem;
+}
+
+.colDisplay {
   margin: 0;
   padding: 0;
 }
 
-nb-accordion-item-header {
-  display: flex;
-  direction: row;
+.scrollheight {
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 100vh;
+  padding-right: 1rem;
+}
+
+.infoDisplay {
+  white-space: nowrap;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis !important;
+}
+
+.statusDisplay {
+  margin-left: -1.25rem;
+}
+
+::ng-deep nb-accordion-item-header .expansion-indicator {
+  left: 1rem;
+}
+
+::ng-deep nb-accordion-item-body .item-body {
+  padding: 0.3rem 1.25rem 0.2rem 0.1rem !important;
 }
 
 div {
   margin: 0;
+}
+
+.output {
+  top: 60px;
+}
+
+nb-accordion-item-body {
+  margin-right: -1.25rem !important;
+  margin-left: 1.25rem !important;
+}
+
+.queryDisplay {
+  padding-right: 0.5rem;
+}
+
+.actionDisplay {
+  margin-bottom: 0.5rem;
+}
+
+.lighter {
+  background-color: rgba(255, 255, 255, 0.75);
+  margin-bottom: -4rem !important;
 }
 
 span {
@@ -49,14 +138,24 @@ span {
   margin-right: 5px;
 }
 
-.verbName,
-.apiName {
+.info {
+  margin-left: 5px;
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+
+.verbName {
   pointer-events: none;
   text-transform: none !important;
 }
 
 @media screen and (max-width: 1500px) {
-  .apiName {
-    display: none;
+  .colDisplay {
+    margin-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  nb-accordion-item {
+    margin-right: 1.25rem;
   }
 }

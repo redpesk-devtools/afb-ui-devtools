@@ -3,10 +3,10 @@
     <a (click)="toggleSidebar()" href="#" class="sidebar-toggle">
       <nb-icon icon="menu-2-outline"></nb-icon>
     </a>
-    <a class="logo" href="#" (click)="navigateHome()"> <span>Binder Web Interface</span> </a>
-    <button nbButton shape="round" status="success" *ngIf="(wsStatus$|async).connected ; else disconnected">Binder WS Active</button>
-    <ng-template #disconnected><button nbButton shape="round" status="danger" (click)="Connect()">Binding WS Fail</button></ng-template>
-    <button nbButton shape="round" (click)="OpenMonitoring()" id="monitoring">Debug/Monitoring</button>
+    <a class="logo" href="#" (click)="navigateHome()"> <span>Binder Devtool</span> </a>
+    <button nbButton shape="round" size="small" status="success" *ngIf="(wsStatus$|async).connected ; else disconnected">Binder WS Active</button>
+    <ng-template #disconnected><button nbButton shape="round" size="small" status="danger" (click)="Connect()">Binding WS Fail</button></ng-template>
+    <button nbButton shape="round" size="small" (click)="OpenMonitoring()" id="monitoring">Debug/Monitoring</button>
   </div>
   <!-- <nb-select [selected]="currentTheme" (selectedChange)="changeTheme($event)" status="primary">
     <nb-option *ngFor="let theme of themes" [value]="theme.value"> {{ theme.name }}</nb-option>
@@ -14,7 +14,9 @@
   <!-- <ngx-layout-direction-switcher class="direction-switcher"></ngx-layout-direction-switcher> -->
 
 </div>
-<div>
+<div class="rp-image">
+  <img src="../../../../assets/images/redpesk_logo_text.png"/>
+  <img src="../../../../assets/images/rp_827x576.png"/>
   <img src="../../../../assets/images/iot-bzh-logo-small.png"/>
 </div>
 
