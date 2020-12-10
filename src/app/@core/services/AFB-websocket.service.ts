@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject, BehaviorSubject, from, ReplaySubject } from 'rxjs';
-import { filter, switchMap, map } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { Observable, Subject, BehaviorSubject, from, ReplaySubject, forkJoin } from 'rxjs';
+import { filter, switchMap, map, take } from 'rxjs/operators';
 import { AFB } from '../afb';
 
 export interface AFBContext {
@@ -56,7 +57,12 @@ export class AFBWebSocketService {
     private _status = <SocketStatus>{ connected: false, reconnect_attempt: 0 };
     private _statusSubject = <BehaviorSubject<SocketStatus>>new BehaviorSubject(this._status);
     private _isInitDone = <ReplaySubject<boolean>>new ReplaySubject(1);
+    // _infoSubject = <BehaviorSubject<Array<object>>>new BehaviorSubject([]);
     private afb: any;
+
+    constructor(private router: Router) {
+    }
+
 
     Init(base: string, initialToken?: string) {
         this.afb = new AFB({
@@ -85,6 +91,7 @@ export class AFBWebSocketService {
                 this._wsConnectSubject.next(event);
                 this._isInitDone.next(true);
                 this._status.reconnect_attempt = 0;
+                this.router.navigate(['/']);
             },
             // onerror
             () => {
@@ -97,6 +104,7 @@ export class AFBWebSocketService {
             console.error(this._status.reconnect_attempt);
             this._isInitDone.next(false);
             this._wsDisconnectSubject.next(event);
+            // this._infoSubject.next([]);
             if (this._status.reconnect_attempt < 100) {
                 this._status.reconnect_attempt++;
                 setTimeout(() => {
@@ -132,7 +140,8 @@ export class AFBWebSocketService {
                     },
                     )
                 );
-            })
+            }),
+            take(1),
         );
     }
 
@@ -200,6 +209,27 @@ export class AFBWebSocketService {
         }
         this._statusSubject.next(Object.assign({}, this._status));
     }
+
+    getInfoVerbs(): Observable<Array<object>> {
+        return this.Discover().pipe(
+          map((data) => {
+            const tasks$ = [];
+            data.forEach(api => {
+              if (api.verbs.find(d => d.verb === '/info')) {
+                tasks$.push(this.Send(api.api + '/info', {}).pipe(
+                  map(d => {
+                    return { 'api': api.api, 'info': d.response };
+                  })
+                ));
+              }
+            });
+            return forkJoin(...tasks$);
+          }),
+          switchMap(res => {
+            return res;
+          })
+        );
+      }
 
     Discover(): Observable<AFBApis> {
         return this.Send('monitor/get', { 'apis': true }).pipe(

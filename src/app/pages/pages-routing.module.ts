@@ -35,12 +35,7 @@ const routes: Routes = [{
   component: PagesComponent,
   children: [
     {
-      path: '',
-      redirectTo: 'binders',
-      pathMatch: 'full',
-    },
-    {
-      path: 'binders',
+      path: '**',
       component: HelloWorldComponent,
     },
   ],

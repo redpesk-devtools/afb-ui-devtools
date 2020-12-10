@@ -1,27 +1,26 @@
 <div class="row m-0 p-0 scrollheight" *ngIf="(wsStatus$|async)?.connected">
     <div class="col-lg-4 col-md-6 col-sm-12 colDisplay">
         <div class="scrollheight" *ngIf="(info$ | async) as infoVerb">
-            <div *ngIf="(verbs$ | async) as allVerbs">
-            <nb-card *ngIf="infoVerb.length > 0; else disabled">
+            <nb-card class="advancedToggle" *ngIf="infoVerb.length > 0; else disabled">
                 <nb-toggle status="primary" class="ml-auto" [(checked)]="checked">Advanced</nb-toggle>
             </nb-card>
             <ng-template #disabled>
                 <nb-card>
-                    <nb-toggle status="primary" disabled class="ml-auto" [(checked)]="checked">Advanced</nb-toggle>
+                    <nb-toggle class="advancedToggle" status="primary" disabled class="ml-auto" [(checked)]="checked">Advanced</nb-toggle>
                 </nb-card>
             </ng-template>
         <div *ngIf="checked || infoVerb.length === 0; else info">
-            <nb-accordion multi class="mx-0 p-0" *ngFor="let apiMonitor of allVerbs; let i=index">
+            <nb-accordion multi class="mx-0 p-0" *ngFor="let apiMonitor of (verbs$ | async); let i=index">
                 <nb-accordion-item class="mr-0 p-0 bg-transparent" expanded=true>
                     <nb-accordion-item-header class="mr-0 p-0">
                        <div class="infoDisplay">
-                            <a nbButton size="medium" ghost class="verbName">{{ apiMonitor.title | uppercase }}</a> 
+                            <a nbButton size="medium" ghost class="verbName">{{ apiMonitor.api | uppercase }}</a> 
                             <a nbPopover="{{ apiMonitor.description}}" nbPopoverTrigger="hover" class="caption px-2">{{ apiMonitor.description }}</a>
                         </div>
                     </nb-accordion-item-header>
                     <nb-accordion-item-body>
                     <nb-accordion multi class="mr-0 p-0">
-                        <nb-accordion-item class="m-0 p-0" *ngFor="let verb of apiMonitor.verbs; let k=index" j="0" [ng-init]="setQuery(i,j,k)">
+                        <nb-accordion-item class="m-0 p-0" *ngFor="let verb of apiMonitor.verbs; let k=index" j="0" [ng-init]="setQuery(i,j,k,'advanced')">
                             <nb-accordion-item-header class="mr-0 p-0">
                                 <nb-card class="verbDisplay">
                                     <div class="infoDisplay">
@@ -77,7 +76,7 @@
                         
                             
                     <nb-accordion class="mr-0 p-0">
-                        <nb-accordion-item class="m-0 p-0" *ngFor="let verb of group.verbs; let k=index" [ng-init]="setQuery(i,j,k)">
+                        <nb-accordion-item class="m-0 p-0" *ngFor="let verb of group.verbs; let k=index" [ng-init]="setQuery(i,j,k,'info')">
                             <nb-accordion-item-header class="mr-0 p-0">
                                 <nb-card class="verbDisplay">
                                     <div class="infoDisplay">
@@ -115,7 +114,6 @@
         <ng-template #advanced>
             
         </ng-template>
-        </div>
         </div>
     </div>
     <div class="col-lg-8 col-md-6 col-sm-12 colDisplay">
