@@ -146,6 +146,9 @@ export class AFBWebSocketService {
     }
 
     CheckIfJson(str: string): boolean {
+        if (str === undefined || str === '' || !str.trim().length) {
+            return true;
+        }
         try {
             JSON.parse(str);
         } catch (e) {

@@ -95,7 +95,10 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
     if (this.afbService.CheckIfJson(query) === true) {
       this.afbService.Send(api + '/' + verb, query).subscribe(d => {
         this.status = d.response;
-        const req = this.count + ': ws://' + window.location.host + '/api/' + api + '/' + verb + '?query=' + query;
+        let req = this.count + ': ws://' + window.location.host + '/api/' + api + '/' + verb;
+        if (query && query.trim().length > 0) {
+          req += '?query=' + query;
+        }
         this.questions.unshift(this.afbService.syntaxHighlight(req));
         this._questionsSubject.next(this.questions);
         const res = [this.count + ': OK :' + this.afbService.syntaxHighlight(d)];

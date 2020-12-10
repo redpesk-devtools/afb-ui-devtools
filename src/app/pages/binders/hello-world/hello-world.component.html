@@ -55,7 +55,7 @@
                             <div class="statusDisplay" *ngIf="api.info.metadata.status">
                                 <div class="d-inline-block ml-3 text-left mt-0 pt-0" *ngFor="let statusApiItem of api.info.metadata.status | keyvalue">
                                     <a nbButton inactive size="tiny" class="verbName">{{statusApiItem.key}}</a>
-                                    <a nbButton ghost size="tiny" nbPopover="{{ statusApiItem.value }}" nbPopoverTrigger="hint" class="caption px-2">{{ statusApiItem.value}}</a>
+                                    <a nbButton ghost size="tiny" class="caption px-2">{{ statusApiItem.value}}</a>
                                 </div>
                             </div>
                   <nb-accordion multi class="mr-0 p-0">
@@ -63,14 +63,14 @@
                         <nb-accordion-item-header class="mr-0 p-0">
                             <div class="infoDisplay">
                                 <a nbButton ghost status="primary" class="verbName">{{ group.uid | uppercase }}</a>
-                                <a nbPopover="{{group.info}}" nbPopoverTrigger="hover" class="caption px-2">{{ group.info }}</a>
+                                <a nbPopover="{{group.info}}" nbPopoverTrigger="hint" class="caption px-2">{{ group.info }}</a>
                             </div>
                     </nb-accordion-item-header>
                     <nb-accordion-item-body class="m-0 p-0">
                         <div class="d-inline statusDisplay" *ngIf="group.status">
                             <div class="d-inline-block ml-3 text-left mt-0 pt-0" *ngFor="let statusItem of group.status | keyvalue">
                                 <a nbButton inactive size="tiny" class="verbName">{{statusItem.key}}</a>
-                                <a nbButton ghost size="tiny" nbPopover="{{ statusItem.value }}" nbPopoverTrigger="hover" class="caption px-2">{{ statusItem.value}}</a>
+                                <a nbButton ghost size="tiny" class="caption px-2">{{ statusItem.value}}</a>
                             </div>
                         </div>
                         
@@ -81,7 +81,7 @@
                                 <nb-card class="verbDisplay">
                                     <div class="infoDisplay">
                                         <a nbButton status="primary" size="tiny" class="verbName">{{verb.uid}}</a>
-                                        <a nbPopover="{{verb.info}}" nbPopoverTrigger="hover" class="caption px-2" *ngIf="verb.info">{{verb.info}}</a>
+                                        <a nbPopover="{{verb.info}}" nbPopoverTrigger="hint" class="caption px-2" *ngIf="verb.info">{{verb.info}}</a>
                                     </div>
                             </nb-card>
                             </nb-accordion-item-header>
@@ -92,7 +92,7 @@
                                     <a nbButton outline size="tiny" *ngIf="verb.sample !== undefined && verb.sample.length > 0" status="info" (click)="show = !show;">Samples</a>
                                 </div>
                                 <nb-card *ngIf="show">
-                                    <button nbButton size="tiny" *ngFor="let sample of verb.sample" nbPopover="{{sample | json}}" nbPopoverTrigger="hint" class="d-inline-block font-weight-normal text-lowercase text-left text-truncate" (click)="query[i][j][k]=getExample(sample)">{{ sample | json }}</button>
+                                    <button nbButton size="tiny" *ngFor="let sample of verb.sample" class="d-inline-block font-weight-normal text-lowercase text-left text-truncate" (click)="query[i][j][k]=getExample(sample)">{{ sample | json }}</button>
                                 </nb-card>
                                 <label>Query :</label>
                                 <textarea nbInput fullWidth class="font-weight-light" [(ngModel)]="query[i][j][k]" [placeholder]="verb.usage ? getUsage(action, verb.usage) : ''"></textarea>
