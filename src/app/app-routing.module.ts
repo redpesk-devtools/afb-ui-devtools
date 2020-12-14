@@ -34,6 +34,7 @@ const routes: Routes = [
       .then(m => m.PagesModule),
   },
   { path: '', redirectTo: '/', pathMatch: 'full' },
+  { path: '*', redirectTo: '/', pathMatch: 'full' },
   { path: '**', redirectTo: '/', pathMatch: 'full'  },
 ];
 

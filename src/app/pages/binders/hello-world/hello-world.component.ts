@@ -70,9 +70,11 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // this.afbService.SetURL(this.host, this.port);
     this.afbService.SetURL(window.location.host);
     this.wsStatus$ = this.afbService.Status$;
     this.verbs$ = this.afbService.Discover();
+    this.afbService.getApis();
     this.questions = [];
     this.responses = [];
     this.info$ = this.afbService.getInfoVerbs();
@@ -85,6 +87,16 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
       this.evtidx++;
       this._eventSubject.next(this._eventArray);
     });
+  }
+
+  checkInfo(info: Array<Object>): boolean {
+    let hasInfo = false;
+    info.forEach(infoverb => {
+      if (infoverb !== undefined) {
+        hasInfo = true;
+      }
+    }, hasInfo);
+    return hasInfo;
   }
 
   callBinder(api: string, verb: string, query: string) {

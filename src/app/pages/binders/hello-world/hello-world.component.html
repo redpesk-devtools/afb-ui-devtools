@@ -1,15 +1,16 @@
 <div class="row m-0 p-0 scrollheight" *ngIf="(wsStatus$|async)?.connected">
     <div class="col-lg-4 col-md-6 col-sm-12 colDisplay">
         <div class="scrollheight" *ngIf="(info$ | async) as infoVerb">
-            <nb-card class="advancedToggle" *ngIf="infoVerb.length > 0; else disabled">
+            <nb-card class="advancedToggle" *ngIf="checkInfo(infoVerb); else disabled">
                 <nb-toggle status="primary" class="ml-auto" [(checked)]="checked">Advanced</nb-toggle>
+                
             </nb-card>
             <ng-template #disabled>
                 <nb-card>
                     <nb-toggle class="advancedToggle" status="primary" disabled class="ml-auto" [(checked)]="checked">Advanced</nb-toggle>
                 </nb-card>
             </ng-template>
-        <div *ngIf="checked || infoVerb.length === 0; else info">
+        <div *ngIf="checked || !checkInfo(infoVerb); else info">
             <nb-accordion multi class="mx-0 p-0" *ngFor="let apiMonitor of (verbs$ | async); let i=index">
                 <nb-accordion-item class="mr-0 p-0 bg-transparent" expanded=true>
                     <nb-accordion-item-header class="mr-0 p-0">
@@ -44,7 +45,7 @@
 
         <ng-template #info>
             <nb-accordion multi class="mx-0 p-0" *ngFor="let api of infoVerb; let i=index">
-                <nb-accordion-item class="mr-0 p-0 bg-transparent" *ngIf="api.info.metadata" expanded=true>
+                <nb-accordion-item class="mr-0 p-0 bg-transparent" *ngIf="api && api.info && api.info.metadata" expanded=true>
                     <nb-accordion-item-header class="mr-0 p-0">
                             <div class="infoDisplay">
                                 <a nbButton size="medium" ghost class="verbName">{{ api.info.metadata.uid | uppercase }}</a> 
@@ -87,10 +88,12 @@
                             </nb-accordion-item-header>
                             <nb-accordion-item-body class="m-0 p-0">
                                 <div class="queryDisplay">
-                                    <div class="actionDisplay" *ngIf="verb.usage">
-                                    <button size="tiny" status="primary" *ngFor="let action of verb.usage.action" outline nbButton size="tiny" (click)="query[i][j][k]=getAction(action); expanded=true">{{ action }}</button>
-                                    <a nbButton outline size="tiny" *ngIf="verb.sample !== undefined && verb.sample.length > 0" status="info" (click)="show = !show;">Samples</a>
-                                </div>
+                                    <div class="actionDisplay">
+                                        <div *ngIf="verb.usage">
+                                            <button size="tiny" status="primary" *ngFor="let action of verb.usage.action" outline nbButton size="tiny" (click)="query[i][j][k]=getAction(action); expanded=true">{{ action }}</button>
+                                        </div>
+                                        <button nbButton outline size="tiny" *ngIf="verb.sample !== undefined && verb.sample.length > 0" status="info" (click)="show = !show;">Samples</button>
+                                    </div>
                                 <nb-card *ngIf="show">
                                     <button nbButton size="tiny" *ngFor="let sample of verb.sample" class="d-inline-block font-weight-normal text-lowercase text-left text-truncate" (click)="query[i][j][k]=getExample(sample)">{{ sample | json }}</button>
                                 </nb-card>
@@ -123,7 +126,7 @@
                         <nb-card-body class="bg-white">
                             <pre *ngFor="let question of questions$ | async" [innerHTML]="question"></pre>
                         </nb-card-body>
-            </nb-card>
+                </nb-card>
             <nb-card size="small">
                 <nb-card-header class="m-0 p-0">RESPONSES<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="resetResponses()"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
                 <nb-card-body class="bg-white">

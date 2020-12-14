@@ -214,17 +214,17 @@ export class AFBWebSocketService {
     }
 
     getInfoVerbs(): Observable<Array<object>> {
-        return this.Discover().pipe(
+        return this.getApis().pipe(
           map((data) => {
             const tasks$ = [];
             data.forEach(api => {
-              if (api.verbs.find(d => d.verb === '/info')) {
-                tasks$.push(this.Send(api.api + '/info', {}).pipe(
+                tasks$.push(this.Send(api + '/info', {}).pipe(
                   map(d => {
-                    return { 'api': api.api, 'info': d.response };
+                      if (d.response) {
+                         return { 'api': api, 'info': d.response };
+                      }
                   })
                 ));
-              }
             });
             return forkJoin(...tasks$);
           }),
@@ -233,6 +233,43 @@ export class AFBWebSocketService {
           })
         );
       }
+
+    // getInfoVerbs(): Observable<Array<object>> {
+    //     return this.Discover().pipe(
+    //       map((data) => {
+    //         const tasks$ = [];
+    //         data.forEach(api => {
+    //           if (api.verbs.find(d => d.verb === '/info')) {
+    //             tasks$.push(this.Send(api.api + '/info', {}).pipe(
+    //               map(d => {
+    //                 return { 'api': api.api, 'info': d.response };
+    //               })
+    //             ));
+    //           }
+    //         });
+    //         return forkJoin(...tasks$);
+    //       }),
+    //       switchMap(res => {
+    //         return res;
+    //       })
+    //     );
+    //   }
+
+      getApis(): Observable<Array<string>> {
+        return this.Send('monitor/get', { 'apis': true }).pipe(
+            map(data => {
+                const apis: Array<string> = [];
+                const keys = Object.keys(data.response.apis);
+                const results = keys.map(key => ({ key: key, value: data.response.apis[key] }));
+                results.forEach(value => {
+                    if (value.key !== 'monitor') {
+                        apis.push(value.key);
+                    }
+                });
+                return apis;
+            })
+        );
+    }
 
     Discover(): Observable<AFBApis> {
         return this.Send('monitor/get', { 'apis': true }).pipe(
