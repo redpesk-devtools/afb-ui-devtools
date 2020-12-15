@@ -5,7 +5,6 @@ books:
     title: Monitoring
     description:
     author: "IotBzh"
-    version: master
     chapters:
     - url: monitoring.md
-      name: Monitoring
+      name: Introduction
