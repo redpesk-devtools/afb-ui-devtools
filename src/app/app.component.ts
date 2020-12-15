@@ -1,11 +1,5 @@
 /**
  * @license
- * Copyright Akveo. All Rights Reserved.
- * Licensed under the MIT License. See License.txt in the project root for license information.
- */
-
-/**
- * @license
  * Copyright (C) 2019-2020 IoT.bzh Company
  * Contact: https://www.iot.bzh/licensing
  *
@@ -48,8 +42,6 @@ export class AppComponent implements OnInit, OnDestroy {
   host: string = 'localhost';
   port: string = '1234';
   ws: string;
-//   urlws = "ws://"+window.location.host+"/"+base;
-//  urlhttp = "http://"+window.location.host+"/"+base;
 
   verbs$: Observable<Array<AFBApi>>;
   wsStatus$: Observable<SocketStatus>;

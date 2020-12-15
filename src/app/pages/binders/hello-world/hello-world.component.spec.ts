@@ -24,7 +24,6 @@
  * $RP_END_LICENSE$
  */
 
-
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HelloWorldComponent } from './hello-world.component';

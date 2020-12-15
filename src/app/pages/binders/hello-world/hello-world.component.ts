@@ -24,7 +24,6 @@
  * $RP_END_LICENSE$
  */
 
-
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription, Observable, BehaviorSubject, Subject } from 'rxjs';
 import { AFBWebSocketService, SocketStatus, AFBApi } from '../../../@core/services/AFB-websocket.service';
