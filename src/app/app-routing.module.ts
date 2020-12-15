@@ -29,12 +29,13 @@ import { NgModule } from '@angular/core';
 
 const routes: Routes = [
   {
-    path: 'pages',
+    path: '',
     loadChildren: () => import('./pages/pages.module')
       .then(m => m.PagesModule),
   },
-  { path: '', redirectTo: 'pages', pathMatch: 'full' },
-  { path: '**', redirectTo: 'pages' },
+  { path: '', redirectTo: '/', pathMatch: 'full' },
+  { path: '*', redirectTo: '/', pathMatch: 'full' },
+  { path: '**', redirectTo: '/', pathMatch: 'full'  },
 ];
 
 const config: ExtraOptions = {

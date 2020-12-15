@@ -1,27 +1,27 @@
 <div class="row m-0 p-0 scrollheight" *ngIf="(wsStatus$|async)?.connected">
     <div class="col-lg-4 col-md-6 col-sm-12 colDisplay">
         <div class="scrollheight" *ngIf="(info$ | async) as infoVerb">
-            <div *ngIf="(verbs$ | async) as allVerbs">
-            <nb-card *ngIf="infoVerb.length > 0; else disabled">
+            <nb-card class="advancedToggle" *ngIf="checkInfo(infoVerb); else disabled">
                 <nb-toggle status="primary" class="ml-auto" [(checked)]="checked">Advanced</nb-toggle>
+                
             </nb-card>
             <ng-template #disabled>
                 <nb-card>
-                    <nb-toggle status="primary" disabled class="ml-auto" [(checked)]="checked">Advanced</nb-toggle>
+                    <nb-toggle class="advancedToggle" status="primary" disabled class="ml-auto" [(checked)]="checked">Advanced</nb-toggle>
                 </nb-card>
             </ng-template>
-        <div *ngIf="checked || infoVerb.length === 0; else info">
-            <nb-accordion multi class="mx-0 p-0" *ngFor="let apiMonitor of allVerbs; let i=index">
+        <div *ngIf="checked || !checkInfo(infoVerb); else info">
+            <nb-accordion multi class="mx-0 p-0" *ngFor="let apiMonitor of (verbs$ | async); let i=index">
                 <nb-accordion-item class="mr-0 p-0 bg-transparent" expanded=true>
                     <nb-accordion-item-header class="mr-0 p-0">
                        <div class="infoDisplay">
-                            <a nbButton size="medium" ghost class="verbName">{{ apiMonitor.title | uppercase }}</a> 
+                            <a nbButton size="medium" ghost class="verbName">{{ apiMonitor.api | uppercase }}</a> 
                             <a nbPopover="{{ apiMonitor.description}}" nbPopoverTrigger="hover" class="caption px-2">{{ apiMonitor.description }}</a>
                         </div>
                     </nb-accordion-item-header>
                     <nb-accordion-item-body>
                     <nb-accordion multi class="mr-0 p-0">
-                        <nb-accordion-item class="m-0 p-0" *ngFor="let verb of apiMonitor.verbs; let k=index" j="0" [ng-init]="setQuery(i,j,k)">
+                        <nb-accordion-item class="m-0 p-0" *ngFor="let verb of apiMonitor.verbs; let k=index" j="0" [ng-init]="setQuery(i,j,k,'advanced')">
                             <nb-accordion-item-header class="mr-0 p-0">
                                 <nb-card class="verbDisplay">
                                     <div class="infoDisplay">
@@ -45,7 +45,7 @@
 
         <ng-template #info>
             <nb-accordion multi class="mx-0 p-0" *ngFor="let api of infoVerb; let i=index">
-                <nb-accordion-item class="mr-0 p-0 bg-transparent" *ngIf="api.info.metadata" expanded=true>
+                <nb-accordion-item class="mr-0 p-0 bg-transparent" *ngIf="api && api.info && api.info.metadata" expanded=true>
                     <nb-accordion-item-header class="mr-0 p-0">
                             <div class="infoDisplay">
                                 <a nbButton size="medium" ghost class="verbName">{{ api.info.metadata.uid | uppercase }}</a> 
@@ -56,7 +56,7 @@
                             <div class="statusDisplay" *ngIf="api.info.metadata.status">
                                 <div class="d-inline-block ml-3 text-left mt-0 pt-0" *ngFor="let statusApiItem of api.info.metadata.status | keyvalue">
                                     <a nbButton inactive size="tiny" class="verbName">{{statusApiItem.key}}</a>
-                                    <a nbButton ghost size="tiny" nbPopover="{{ statusApiItem.value }}" nbPopoverTrigger="hint" class="caption px-2">{{ statusApiItem.value}}</a>
+                                    <a nbButton ghost size="tiny" class="caption px-2">{{ statusApiItem.value}}</a>
                                 </div>
                             </div>
                   <nb-accordion multi class="mr-0 p-0">
@@ -64,36 +64,38 @@
                         <nb-accordion-item-header class="mr-0 p-0">
                             <div class="infoDisplay">
                                 <a nbButton ghost status="primary" class="verbName">{{ group.uid | uppercase }}</a>
-                                <a nbPopover="{{group.info}}" nbPopoverTrigger="hover" class="caption px-2">{{ group.info }}</a>
+                                <a nbPopover="{{group.info}}" nbPopoverTrigger="hint" class="caption px-2">{{ group.info }}</a>
                             </div>
                     </nb-accordion-item-header>
                     <nb-accordion-item-body class="m-0 p-0">
                         <div class="d-inline statusDisplay" *ngIf="group.status">
                             <div class="d-inline-block ml-3 text-left mt-0 pt-0" *ngFor="let statusItem of group.status | keyvalue">
                                 <a nbButton inactive size="tiny" class="verbName">{{statusItem.key}}</a>
-                                <a nbButton ghost size="tiny" nbPopover="{{ statusItem.value }}" nbPopoverTrigger="hover" class="caption px-2">{{ statusItem.value}}</a>
+                                <a nbButton ghost size="tiny" class="caption px-2">{{ statusItem.value}}</a>
                             </div>
                         </div>
                         
                             
                     <nb-accordion class="mr-0 p-0">
-                        <nb-accordion-item class="m-0 p-0" *ngFor="let verb of group.verbs; let k=index" [ng-init]="setQuery(i,j,k)">
+                        <nb-accordion-item class="m-0 p-0" *ngFor="let verb of group.verbs; let k=index" [ng-init]="setQuery(i,j,k,'info')">
                             <nb-accordion-item-header class="mr-0 p-0">
                                 <nb-card class="verbDisplay">
                                     <div class="infoDisplay">
                                         <a nbButton status="primary" size="tiny" class="verbName">{{verb.uid}}</a>
-                                        <a nbPopover="{{verb.info}}" nbPopoverTrigger="hover" class="caption px-2" *ngIf="verb.info">{{verb.info}}</a>
+                                        <a nbPopover="{{verb.info}}" nbPopoverTrigger="hint" class="caption px-2" *ngIf="verb.info">{{verb.info}}</a>
                                     </div>
                             </nb-card>
                             </nb-accordion-item-header>
                             <nb-accordion-item-body class="m-0 p-0">
                                 <div class="queryDisplay">
-                                    <div class="actionDisplay" *ngIf="verb.usage">
-                                    <button size="tiny" status="primary" *ngFor="let action of verb.usage.action" outline nbButton size="tiny" (click)="query[i][j][k]=getAction(action); expanded=true">{{ action }}</button>
-                                    <a nbButton outline size="tiny" *ngIf="verb.sample !== undefined && verb.sample.length > 0" status="info" (click)="show = !show;">Samples</a>
-                                </div>
+                                    <div class="actionDisplay">
+                                        <div *ngIf="verb.usage">
+                                            <button size="tiny" status="primary" *ngFor="let action of verb.usage.action" outline nbButton size="tiny" (click)="query[i][j][k]=getAction(action); expanded=true">{{ action }}</button>
+                                        </div>
+                                        <button nbButton outline size="tiny" *ngIf="verb.sample !== undefined && verb.sample.length > 0" status="info" (click)="show = !show;">Samples</button>
+                                    </div>
                                 <nb-card *ngIf="show">
-                                    <button nbButton size="tiny" *ngFor="let sample of verb.sample" nbPopover="{{sample | json}}" nbPopoverTrigger="hint" class="d-inline-block font-weight-normal text-lowercase text-left text-truncate" (click)="query[i][j][k]=getExample(sample)">{{ sample | json }}</button>
+                                    <button nbButton size="tiny" *ngFor="let sample of verb.sample" class="d-inline-block font-weight-normal text-lowercase text-left text-truncate" (click)="query[i][j][k]=getExample(sample)">{{ sample | json }}</button>
                                 </nb-card>
                                 <label>Query :</label>
                                 <textarea nbInput fullWidth class="font-weight-light" [(ngModel)]="query[i][j][k]" [placeholder]="verb.usage ? getUsage(action, verb.usage) : ''"></textarea>
@@ -116,7 +118,6 @@
             
         </ng-template>
         </div>
-        </div>
     </div>
     <div class="col-lg-8 col-md-6 col-sm-12 colDisplay">
         <div class="output sticky-top scrollheight">
@@ -125,7 +126,7 @@
                         <nb-card-body class="bg-white">
                             <pre *ngFor="let question of questions$ | async" [innerHTML]="question"></pre>
                         </nb-card-body>
-            </nb-card>
+                </nb-card>
             <nb-card size="small">
                 <nb-card-header class="m-0 p-0">RESPONSES<button nbButton shape="round" size="tiny" outline status="primary" class="float-right" (click)="resetResponses()"><nb-icon icon="trash"></nb-icon></button></nb-card-header>
                 <nb-card-body class="bg-white">

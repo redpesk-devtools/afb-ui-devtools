@@ -33,7 +33,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AnalyticsService } from './@core/utils/analytics.service';
 import { NbIconLibraries } from '@nebular/theme';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription, Observable, BehaviorSubject } from 'rxjs';
 import { AFBWebSocketService, SocketStatus, AFBApi } from './@core/services/AFB-websocket.service';
 
 @Component({
@@ -47,9 +47,16 @@ export class AppComponent implements OnInit, OnDestroy {
   status;
   host: string = 'localhost';
   port: string = '1234';
+  ws: string;
+//   urlws = "ws://"+window.location.host+"/"+base;
+//  urlhttp = "http://"+window.location.host+"/"+base;
+
   verbs$: Observable<Array<AFBApi>>;
   wsStatus$: Observable<SocketStatus>;
   bindingName$: Observable<string>;
+  private _infoSubject = <BehaviorSubject<Array<object>>>new BehaviorSubject([]);
+  info$: Observable<Array<object>>;
+  apiInfo: Array<object>;
 
   constructor(
     private analytics: AnalyticsService,
@@ -63,15 +70,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.analytics.trackPageViews();
-    this.afbService.SetURL(this.host, this.port);
+    // this.afbService.SetURL(this.host, this.port);
+    this.afbService.SetURL(window.location.host);
     this.afbService.Connect();
     this.wsStatus$ = this.afbService.Status$;
-    // this.afbService.Discover().subscribe(
-    //   (verbs) => {
-    //     this.verbs = verbs;
-    // }, (err) => {
-    //     console.error(err);
-    // });
+    this.info$ = this._infoSubject.asObservable();
+    this.apiInfo = [];
   }
 
   closeSocket() {

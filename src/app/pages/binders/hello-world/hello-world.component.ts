@@ -53,7 +53,6 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   private _eventSubject = <BehaviorSubject<Array<string>>>new BehaviorSubject(this._eventArray);
   private _questionsSubject = new Subject<Array<String>>();
   private _responsesSubject = new Subject<Array<Array<String>>>();
-  private _infoSubject = <BehaviorSubject<Array<object>>>new BehaviorSubject([]);
   wsStatus$: Observable<SocketStatus>;
   verbs$: Observable<Array<AFBApi>>;
   info$: Observable<Array<object>>;
@@ -63,6 +62,7 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   responses: Array<Array<String>>;
   event$: Observable<Array<string>>;
   apiInfo: Array<object>;
+  info: Array<object>;
 
   constructor(
     private afbService: AFBWebSocketService,
@@ -70,13 +70,14 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // this.afbService.SetURL(this.host, this.port);
+    this.afbService.SetURL(window.location.host);
     this.wsStatus$ = this.afbService.Status$;
     this.verbs$ = this.afbService.Discover();
-    this.apiInfo = [];
+    this.afbService.getApis();
     this.questions = [];
     this.responses = [];
-    this.getInfoVerbs();
-    this.info$ = this._infoSubject.asObservable();
+    this.info$ = this.afbService.getInfoVerbs();
     this.questions$ = this._questionsSubject.asObservable();
     this.responses$ = this._responsesSubject.asObservable();
     this.count = 0;
@@ -88,31 +89,14 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
     });
   }
 
-  getInfoVerbs() {
-    this.afbService.Discover().subscribe(data  => {
-        data.forEach(api => {
-          if (api.verbs.find(d => d.verb === '/info')) {
-            this.afbService.Send(api.api + '/info', {}).subscribe(d => {
-                  this.apiInfo.push({ 'api': api.api, 'info' : d.response});
-                  this._infoSubject.next(this.apiInfo);
-                });
-          }
-        });
+  checkInfo(info: Array<Object>): boolean {
+    let hasInfo = false;
+    info.forEach(infoverb => {
+      if (infoverb !== undefined) {
+        hasInfo = true;
       }
-    );
-  }
-
-  isAdvanced(info: any, verb: string): Boolean {
-    info.groups.forEach(group => {
-      if (group.verbs.find(d => d.uid === verb || d.verb === verb)) {
-        return false;
-      }
-    });
-    return true;
-  }
-
-  hasAdvancedVerbs() {
-
+    }, hasInfo);
+    return hasInfo;
   }
 
   callBinder(api: string, verb: string, query: string) {
@@ -123,7 +107,10 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
     if (this.afbService.CheckIfJson(query) === true) {
       this.afbService.Send(api + '/' + verb, query).subscribe(d => {
         this.status = d.response;
-        const req = this.count + ': ws://' + this.host + ':' + this.port + '/api/' + api + '/' + verb + '?query=' + query;
+        let req = this.count + ': ws://' + window.location.host + '/api/' + api + '/' + verb;
+        if (query && query.trim().length > 0) {
+          req += '?query=' + query;
+        }
         this.questions.unshift(this.afbService.syntaxHighlight(req));
         this._questionsSubject.next(this.questions);
         const res = [this.count + ': OK :' + this.afbService.syntaxHighlight(d)];
@@ -136,7 +123,7 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
     }
   }
 
-  setQuery(i: any, j: any, k: any) {
+  setQuery(i: any, j: any, k: any, call: string) {
     if (!this.query[i]) {
       this.query[i] = [];
     }
@@ -144,7 +131,11 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
       this.query[i][j] = [];
     }
     if (!this.query[i][j][k]) {
+      if (call === 'info') {
       this.query[i][j][k] = '';
+      } else {
+        this.query[i][j][k] = '{}';
+      }
     }
   }
 
