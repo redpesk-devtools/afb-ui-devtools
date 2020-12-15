@@ -7,4 +7,4 @@ books:
     author: "IotBzh"
     chapters:
     - url: monitoring.md
-      name: Introduction
+      name: Binder Devtool
