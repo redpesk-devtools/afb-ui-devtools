@@ -1,0 +1,10 @@
+type: books
+books:
+-
+    id: monitoring-doc
+    title: Monitoring
+    description:
+    author: "IotBzh"
+    chapters:
+    - url: monitoring.md
+      name: Binder Devtool
