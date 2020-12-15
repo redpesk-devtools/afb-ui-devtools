@@ -1,0 +1,11 @@
+type: books
+books:
+-
+    id: monitoring-doc
+    title: Monitoring
+    description:
+    author: "IotBzh"
+    version: master
+    chapters:
+    - url: monitoring.md
+      name: Monitoring
