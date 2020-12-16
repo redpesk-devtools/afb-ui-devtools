@@ -6,6 +6,10 @@ The Binder devtool provides a graphical environment automatically populated to t
 
 ## Native installation
 
+First setup your host, declare Redpesk native packages repository [refer to the add repository section](../developer-guides/host-configuration/docs/1-Setup-your-build-host.html)
+
+Then install the afb-ui-devtools package.
+
 ### for Fedora
 ```
 sudo dnf install afb-ui-devtools
@@ -29,8 +33,9 @@ sudo zypper install afb-ui-devtools
 ## Access Binder Devtool
 
 Once a binding is running, to launch the Binder Devtool UI enter   
-```**[host]:[port]/devtools**``` in your browser address bar.  
-*For example: ```"localhost:3333/devtools"``` for a binding running on localhost, on port 3333.*
+`[host]:[port]/devtools/` in your browser address bar.  
+
+*For example: `localhost:3333/devtools/` for a binding running on localhost, on port 3333.*
 
 ## Navigation Bar
 
