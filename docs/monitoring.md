@@ -4,6 +4,34 @@ The Binder devtool provides a graphical environment automatically populated to t
 
 ![Demo Binder Devtool](images/demo-verbs.png)
 
+## Native installation
+
+### for Fedora
+```
+sudo dnf install afb-ui-devtools
+```
+
+### for Debian
+```
+sudo apt-get install afb-ui-devtools
+```
+
+### for Ubuntu
+```
+sudo apt install afb-ui-devtools
+```
+
+### for OpenSUSE
+```
+sudo zypper install afb-ui-devtools
+```
+
+## Access Binder Devtool
+
+Once a binding is running, to launch the Binder Devtool UI enter   
+```**[host]:[port]/devtools**``` in your browser address bar.  
+*For example: ```"localhost:3333/devtools"``` for a binding running on localhost, on port 3333.*
+
 ## Navigation Bar
 
 **Binder WS Active / Disconnected** At the top of the UI, a green Binder WS Active button means that a binding is currently running on your environment and is accessible for testing and monitoring. In case of disconnection, the button turns to red and the verbs disappear. The UI will automatically attempt to reconnect itself.  
