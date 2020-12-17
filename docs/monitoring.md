@@ -52,7 +52,7 @@ Once a binding is running, to launch the Binder Devtool UI enter
 
 ## Testing a verb
 
-Click on a verb to show its testing form. On **General mode**, clicking on some samples or actions, if provided, will directly pre-fill the query input with parameters. It is possible to modify the query before clicking on test. Sending an empty query is possible, however queries have to be formatted in json with "".
+Click on a verb to show its testing form. On **General mode**, clicking on some samples or actions, if provided, will directly pre-fill the query input with parameters. It is possible to modify the query before clicking on send. Sending an empty query is possible, however queries have to be formatted in json with "".
 
 ## Monitoring
 
@@ -68,8 +68,8 @@ Verbs displayed in General mode are based on the running apis info verbs. Info v
 
 ```json 
  "metadata": {
-      "uid": "helloworld", // string => Api name                     
-      "info": "A simple Helloworld binding", // string => Api description/info
+      "uid": "helloworld", // string => api name                     
+      "info": "A simple Helloworld binding", // string => api description/info
       "status": {"online": true}, // object where to store additional infos such as uri, online, ...
       "version": "1.0"
     },
