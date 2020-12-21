@@ -31,13 +31,13 @@ import { NbToastrService } from '@nebular/theme';
 
 
 @Component({
-  selector: 'rp-hello-world',
-  templateUrl: './hello-world.component.html',
-  styleUrls: ['./hello-world.component.scss'],
+  selector: 'rp-core',
+  templateUrl: './core.component.html',
+  styleUrls: ['./core.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
-export class HelloWorldComponent implements OnInit, OnDestroy {
+export class CoreComponent implements OnInit, OnDestroy {
 
   dataFromServer: string;
   wsSubscription: Subscription;
@@ -46,7 +46,7 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   count: number;
   query: Array<Array<Array<string>>> = [[[]]];
   host: string = 'localhost';
-  port: string = '1234';
+  port: string = '3333';
 
   private _eventArray: Array<string> = [];
   private _eventSubject = <BehaviorSubject<Array<string>>>new BehaviorSubject(this._eventArray);
@@ -69,8 +69,8 @@ export class HelloWorldComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // this.afbService.SetURL(this.host, this.port);
-    this.afbService.SetURL(window.location.host);
+    this.afbService.SetURL(this.host, this.port);
+    // this.afbService.SetURL(window.location.host);
     this.wsStatus$ = this.afbService.Status$;
     this.verbs$ = this.afbService.Discover();
     this.afbService.getApis();

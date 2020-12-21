@@ -28,7 +28,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 
 import { PagesComponent } from './pages.component';
-import { HelloWorldComponent } from './binders/hello-world/hello-world.component';
+import { CoreComponent } from './binders/core/core.component';
 
 const routes: Routes = [{
   path: '',
@@ -36,7 +36,7 @@ const routes: Routes = [{
   children: [
     {
       path: '**',
-      component: HelloWorldComponent,
+      component: CoreComponent,
     },
   ],
 }];

@@ -26,7 +26,7 @@
 
 import { NgModule } from '@angular/core';
 import { ThemeModule } from '../../@theme/theme.module';
-import { HelloWorldComponent } from './hello-world/hello-world.component';
+import { CoreComponent } from './core/core.component';
 import { NbCardModule, NbButtonModule, NbAccordionModule, NbInputModule, NbIconModule,
   NbToastrModule, NbPopoverModule, NbToggleModule } from '@nebular/theme';
 import { FormsModule } from '@angular/forms';
@@ -45,7 +45,7 @@ import { FormsModule } from '@angular/forms';
     FormsModule,
   ],
   declarations: [
-    HelloWorldComponent,
+    CoreComponent,
   ]
 })
 export class BindersModule { }
