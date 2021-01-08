@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { Observable, Subject, BehaviorSubject, from, ReplaySubject, forkJoin } from 'rxjs';
 import { filter, switchMap, map, take } from 'rxjs/operators';
 import { AFB } from '../afb';
@@ -42,24 +41,27 @@ export interface AFBVerb {
 @Injectable()
 export class AFBWebSocketService {
 
-    ws: any;
     context: AFBContext;
+    evtidx = 0;
 
     wsConnect$: Observable<Event>;
     wsDisconnect$: Observable<Event>;
     wsEvent$: Observable<Event>;
     Status$: Observable<SocketStatus>;
     InitDone$: Observable<boolean>;
+    AutoReconnect$: Observable<boolean>;
+    event$: Observable<Array<string>>;
 
+    private ws: any;
     private _wsConnectSubject = new Subject<Event>();
     private _wsDisconnectSubject = new Subject<Event>();
     private _wsEventSubject = new Subject<Event>();
-    private _status = <SocketStatus>{ connected: false, reconnect_attempt: 0 };
+    private _status = <SocketStatus>{ connected: false };
     private _statusSubject = <BehaviorSubject<SocketStatus>>new BehaviorSubject(this._status);
     private _isInitDone = <ReplaySubject<boolean>>new ReplaySubject(1);
     private afb: any;
 
-    constructor(private router: Router) {
+    constructor() {
     }
 
 
@@ -68,7 +70,6 @@ export class AFBWebSocketService {
             base: base,
             token: initialToken
         });
-
         this.wsConnect$ = this._wsConnectSubject.asObservable();
         this.wsDisconnect$ = this._wsDisconnectSubject.asObservable();
         this.wsEvent$ = this._wsEventSubject.asObservable();
@@ -89,8 +90,6 @@ export class AFBWebSocketService {
                 this._NotifyServerState(true);
                 this._wsConnectSubject.next(event);
                 this._isInitDone.next(true);
-                this._status.reconnect_attempt = 0;
-                this.router.navigate(['/']);
             },
             // onerror
             () => {
@@ -100,22 +99,13 @@ export class AFBWebSocketService {
         );
 
         this.ws.onclose = (event: CloseEvent) => {
-            console.error(this._status.reconnect_attempt);
             this._isInitDone.next(false);
+            this._NotifyServerState(false);
             this._wsDisconnectSubject.next(event);
-            // this._infoSubject.next([]);
-            if (this._status.reconnect_attempt < 100) {
-                this._status.reconnect_attempt++;
-                setTimeout(() => {
-                    this._NotifyServerState(false, this._status.reconnect_attempt);
-                    this.Connect();
-                }, 1000);
-            } else {
-                console.error('Reconnection failed. Please make sure your binding is running');
-            }
         };
         return null;
     }
+
 
     Disconnect() {
         // TODO : close all subjects
@@ -202,11 +192,7 @@ export class AFBWebSocketService {
 
     private _NotifyServerState(connected: boolean, attempt?: number) {
         this._status.connected = connected;
-        if (attempt !== null) {
-            this._status.reconnect_attempt = attempt;
-        }
         if (connected) {
-            this._status.reconnect_attempt = 0;
             this._status.reconnect_failed = false;
         }
         this._statusSubject.next(Object.assign({}, this._status));
@@ -214,24 +200,24 @@ export class AFBWebSocketService {
 
     getInfoVerbs(): Observable<Array<object>> {
         return this.getApis().pipe(
-          map((data) => {
-            const tasks$ = [];
-            data.forEach(api => {
-                tasks$.push(this.Send(api + '/info', {}).pipe(
-                  map(d => {
-                      if (d.response) {
-                         return { 'api': api, 'info': d.response };
-                      }
-                  })
-                ));
-            });
-            return forkJoin(...tasks$);
-          }),
-          switchMap(res => {
-            return res;
-          })
+            map((data) => {
+                const tasks$ = [];
+                data.forEach(api => {
+                    tasks$.push(this.Send(api + '/info', {}).pipe(
+                        map(d => {
+                            if (d.response) {
+                                return { 'api': api, 'info': d.response };
+                            }
+                        })
+                    ));
+                });
+                return forkJoin(...tasks$);
+            }),
+            switchMap(res => {
+                return res;
+            })
         );
-      }
+    }
 
     getApis(): Observable<Array<string>> {
         return this.Send('monitor/get', { 'apis': false }).pipe(

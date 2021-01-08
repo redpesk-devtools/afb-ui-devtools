@@ -25,9 +25,11 @@
  */
 
 import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
+// import { DOCUMENT } from '@angular/common';
 import { Subscription, Observable, BehaviorSubject, Subject } from 'rxjs';
 import { AFBWebSocketService, SocketStatus, AFBApi } from '../../../@core/services/AFB-websocket.service';
 import { NbToastrService } from '@nebular/theme';
+import { map } from 'rxjs/operators';
 
 
 @Component({
@@ -42,35 +44,41 @@ export class CoreComponent implements OnInit, OnDestroy {
   dataFromServer: string;
   wsSubscription: Subscription;
   status;
-  evtidx = 0;
+  evtidx;
   count: number;
   query: Array<Array<Array<string>>> = [[[]]];
   host: string = 'localhost';
-  port: string = '3333';
+  port: string = '1234';
 
   private _eventArray: Array<string> = [];
   private _eventSubject = <BehaviorSubject<Array<string>>>new BehaviorSubject(this._eventArray);
   private _questionsSubject = new Subject<Array<String>>();
-  private _responsesSubject = new Subject<Array<Array<String>>>();
+  private _responsesSubject = new Subject<Array<Array<string>>>();
   wsStatus$: Observable<SocketStatus>;
   verbs$: Observable<Array<AFBApi>>;
   info$: Observable<Array<object>>;
   questions$: Observable<Array<String>>;
-  responses$: Observable<Array<Array<String>>>;
+  responses$: Observable<Array<Array<string>>>;
   questions: Array<String>;
-  responses: Array<Array<String>>;
+  responses: Array<Array<string>>;
+  raw_questions: Array<String>;
+  raw_responses: Array<Array<string>>;
+  raw_events: Array<string> = [];
   event$: Observable<Array<string>>;
   apiInfo: Array<object>;
   info: Array<object>;
+  connected = true;
+  initEvents$: Observable<any>;
 
   constructor(
+    // @Inject(DOCUMENT) private document: Document,
     private afbService: AFBWebSocketService,
     private toastrService: NbToastrService) {
   }
 
   ngOnInit(): void {
-    this.afbService.SetURL(this.host, this.port);
-    // this.afbService.SetURL(window.location.host);
+    // this.afbService.SetURL(this.host, this.port);
+    this.afbService.SetURL(window.location.host);
     this.wsStatus$ = this.afbService.Status$;
     this.verbs$ = this.afbService.Discover();
     this.afbService.getApis();
@@ -80,12 +88,13 @@ export class CoreComponent implements OnInit, OnDestroy {
     this.questions$ = this._questionsSubject.asObservable();
     this.responses$ = this._responsesSubject.asObservable();
     this.count = 0;
+    this.evtidx = 0;
     this.event$ = this._eventSubject.asObservable();
-    this.afbService.OnEvent('*').subscribe(d => {
+    this.initEvents$ = this.afbService.OnEvent('*').pipe(map(d => {
       this._eventArray.unshift(this.evtidx + ' : ' + this.afbService.syntaxHighlight(d));
       this.evtidx++;
       this._eventSubject.next(this._eventArray);
-    });
+    }));
   }
 
   checkInfo(info: Array<Object>): boolean {
@@ -112,7 +121,8 @@ export class CoreComponent implements OnInit, OnDestroy {
         }
         this.questions.unshift(this.afbService.syntaxHighlight(req));
         this._questionsSubject.next(this.questions);
-        const res = [this.count + ': OK :' + this.afbService.syntaxHighlight(d)];
+        const outcome = (d.request.status === 'success') ? ': OK :' : ': ERROR :';
+        const res = [this.count + outcome + this.afbService.syntaxHighlight(d)];
         this.responses.unshift(res);
         this._responsesSubject.next(this.responses);
         this.count++;
@@ -165,6 +175,18 @@ export class CoreComponent implements OnInit, OnDestroy {
   resetEvents() {
     this._eventArray = [];
     this._eventSubject.next(this._eventArray);
+  }
+
+  copyToClipboard(text) {
+    const dummy = document.createElement('textarea');
+    document.body.appendChild(dummy);
+    const d = document.createElement('div');
+    d.innerHTML = text;
+    text = d.innerText.replace(/([,])([\S])/g, '$1\n$2');
+    dummy.value = text;
+    dummy.select();
+    document.execCommand('copy');
+    document.body.removeChild(dummy);
   }
 
   closeSocket() {

@@ -35,6 +35,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ];
 
   currentTheme = 'default';
+  checked = true;
 
   userMenu = [ { title: 'Profile' }, { title: 'Log out' } ];
   wsStatus$: Observable<SocketStatus>;
@@ -63,6 +64,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   Connect() {
+    this.afbService.Disconnect();
     this.afbService.Connect();
   }
 

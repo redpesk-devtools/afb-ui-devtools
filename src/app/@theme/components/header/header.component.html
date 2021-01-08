@@ -7,7 +7,7 @@
   </div>
   <div class="header-container">
     <button nbButton shape="round" size="small" status="success" *ngIf="(wsStatus$|async).connected ; else disconnected">Binder WS Active</button>
-    <ng-template #disconnected><button nbButton shape="round" size="small" status="danger" (click)="Connect()">Binding WS Fail</button></ng-template>
+    <ng-template #disconnected><button nbButton shape="round" size="small" status="danger" (click)="Connect()">Binding WS Fail: Connect</button></ng-template>
     <button nbButton ghost shape="round" size="small" (click)="OpenMonitoring()" id="monitoring">Debug/Monitoring</button>
     <a nbButton ghost href="https://docs.redpesk.bzh/" target="_blank" shape="round" size="small">Documentation</a>
   </div>
