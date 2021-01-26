@@ -6,7 +6,7 @@ The Binder devtool provides a graphical environment automatically populated to t
 
 ## Native installation
 
-First setup your host, declare Redpesk native packages repository [refer to the add repository section]({% chapter_link host-configuration-doc.setup-your-build-host %})
+First setup your host, declare redpesk native packages repository [refer to the add repository section]({% chapter_link host-configuration-doc.setup-your-build-host %})
 
 Then install the afb-ui-devtools package.
 
