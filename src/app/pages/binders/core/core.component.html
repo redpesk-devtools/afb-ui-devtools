@@ -1,6 +1,7 @@
+<div *ngIf="(wsStatus$|async) as wsstat">
 <div class="row m-0 p-0 scrollheight">
     <div class="col-lg-4 col-md-6 col-sm-12 colDisplay">
-        <div *ngIf="(wsStatus$|async)?.connected">
+        <div *ngIf="wsstat?.connected === true">
             <div>{{ initEvents$ | async }}</div>
         </div>
         <div class="scrollheight" *ngIf="(info$ | async) as infoVerb">
@@ -42,7 +43,7 @@
                                                 [(ngModel)]="query[i][j][k]"></textarea>
                                             <button nbButton shape="round" status="primary" size="small"
                                                 class="float-right"
-                                                (click)="callBinder(apiMonitor.api, verb.verb, query[i][j][k])">Send</button>
+                                                (click)="callBinder(apiMonitor.api, verb.verb, query[i][j][k], wsstat?.connected)">Send</button>
                                         </div>
                                     </nb-accordion-item-body>
                                 </nb-accordion-item>
@@ -51,12 +52,6 @@
                     </nb-accordion-item>
                 </nb-accordion>
             </div>
-
-            <ng-template *ngIf="connected">
-                <div *ngIf="test | async">Guena</div>
-            </ng-template>
-
-
             <ng-template #info>
                 <nb-accordion multi class="mx-0 p-0" *ngFor="let api of infoVerb; let i=index">
                     <nb-accordion-item class="mr-0 p-0 bg-transparent" *ngIf="api && api.info && api.info.metadata"
@@ -140,7 +135,7 @@
                                                             [placeholder]="verb.usage ? getUsage(action, verb.usage) : ''"></textarea>
                                                         <button nbButton shape="round" status="primary" size="tiny"
                                                             class="float-right"
-                                                            (click)="!verb.verb ? callBinder(api.api, verb.uid, query[i][j][k]) : callBinder(api.api, verb.verb, query[i][j][k])">Send</button>
+                                                            (click)="!verb.verb ? callBinder(api.api, verb.uid, query[i][j][k], wsstat?.connected) : callBinder(api.api, verb.verb, query[i][j][k], wsstat?.connected)">Send</button>
                                                     </div>
                                                 </nb-accordion-item-body>
                                             </nb-accordion-item>
@@ -151,12 +146,6 @@
                         </nb-accordion-item-body>
                     </nb-accordion-item>
                 </nb-accordion>
-            </ng-template>
-
-
-
-            <ng-template #advanced>
-
             </ng-template>
         </div>
     </div>
@@ -254,4 +243,5 @@
             </ng-template>
         </div>
     </div>
+</div>
 </div>

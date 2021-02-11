@@ -63,8 +63,8 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // this.afbService.Init('api', 'HELLO');
     // this.analytics.trackPageViews();
-    this.afbService.SetURL(this.host, this.port);
-    // this.afbService.SetURL(window.location.host);
+    // this.afbService.SetURL(this.host, this.port);
+    this.afbService.SetURL(window.location.host);
     this.afbService.Connect();
     this.wsStatus$ = this.afbService.Status$;
   }

@@ -77,8 +77,8 @@ export class CoreComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.afbService.SetURL(this.host, this.port);
-    // this.afbService.SetURL(window.location.host);
+    // this.afbService.SetURL(this.host, this.port);
+    this.afbService.SetURL(window.location.host);
     this.wsStatus$ = this.afbService.Status$;
     this.verbs$ = this.afbService.Discover();
     this.afbService.getApis();
@@ -107,28 +107,32 @@ export class CoreComponent implements OnInit, OnDestroy {
     return hasInfo;
   }
 
-  callBinder(api: string, verb: string, query: string) {
-    if (verb.charAt(0) === '/') {
-      verb = verb.substring(1);
-    }
-    query = query.split(' ').join('');
-    if (this.afbService.CheckIfJson(query) === true) {
-      this.afbService.Send(api + '/' + verb, query).subscribe(d => {
-        this.status = d.response;
-        let req = this.count + ': ws://' + window.location.host + '/api/' + api + '/' + verb;
-        if (query && query.trim().length > 0) {
-          req += '?query=' + query;
-        }
-        this.questions.unshift(this.afbService.syntaxHighlight(req));
-        this._questionsSubject.next(this.questions);
-        const outcome = (d.request.status === 'success') ? ': OK :' : ': ERROR :';
-        const res = [this.count + outcome + this.afbService.syntaxHighlight(d)];
-        this.responses.unshift(res);
-        this._responsesSubject.next(this.responses);
-        this.count++;
-      });
+  callBinder(api: string, verb: string, query: string, connected: boolean) {
+    if (connected === true) {
+      if (verb.charAt(0) === '/') {
+        verb = verb.substring(1);
+      }
+      query = query.split(' ').join('');
+      if (this.afbService.CheckIfJson(query) === true) {
+        this.afbService.Send(api + '/' + verb, query).subscribe(d => {
+          this.status = d.response;
+          let req = this.count + ': ws://' + window.location.host + '/api/' + api + '/' + verb;
+          if (query && query.trim().length > 0) {
+            req += '?query=' + query;
+          }
+          this.questions.unshift(this.afbService.syntaxHighlight(req));
+          this._questionsSubject.next(this.questions);
+          const outcome = (d.request.status === 'success') ? ': OK :' : ': ERROR :';
+          const res = [this.count + outcome + this.afbService.syntaxHighlight(d)];
+          this.responses.unshift(res);
+          this._responsesSubject.next(this.responses);
+          this.count++;
+        });
+      } else {
+        this.toastrService.show('Invalid parameters: should be JSON type. Minimum query: {}. Use ""');
+      }
     } else {
-      this.toastrService.show('Invalid parameters: should be JSON type. Minimum query: {}. Use ""');
+      this.toastrService.show('Websocket or binding disconnected, request unsendable');
     }
   }
 
