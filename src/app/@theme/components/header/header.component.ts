@@ -68,6 +68,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.afbService.Connect();
   }
 
+  Disconnect() {
+    this.afbService.Disconnect();
+  }
+
   OpenMonitoring() {
     this.windowMonitoring = window.open('/monitoring/monitor.html', '_monitor_ctl');
   }

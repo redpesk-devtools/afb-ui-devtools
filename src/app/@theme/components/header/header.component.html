@@ -6,8 +6,15 @@
     <a class="logo" href="#" (click)="navigateHome()"> <span>Binder Devtool</span> </a>
   </div>
   <div class="header-container">
-    <button nbButton shape="round" size="small" status="success" *ngIf="(wsStatus$|async).connected ; else disconnected">Binder WS Active</button>
-    <ng-template #disconnected><button nbButton shape="round" size="small" status="danger" (click)="Connect()">Binding WS Fail: Connect</button></ng-template>
+    <div *ngIf="(wsStatus$|async).connected; else disconnected">
+      <button ghost nbButton shape="round" size="small" status="success">Binder WS Active</button>
+      <button nbButton shape="round" size="small" status="success" (click)="Disconnect()">Disconnect</button>
+    </div>
+    
+    <ng-template #disconnected>
+      <button ghost nbButton shape="round" size="small" status="danger">Binder WS Fail</button>
+      <button nbButton shape="round" size="small" status="danger" (click)="Connect()">Connect</button>
+    </ng-template>
     <button nbButton ghost shape="round" size="small" (click)="OpenMonitoring()" id="monitoring">Debug/Monitoring</button>
     <a nbButton ghost href="https://docs.redpesk.bzh/" target="_blank" shape="round" size="small">Documentation</a>
   </div>

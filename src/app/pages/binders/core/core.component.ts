@@ -77,8 +77,8 @@ export class CoreComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // this.afbService.SetURL(this.host, this.port);
-    this.afbService.SetURL(window.location.host);
+    this.afbService.SetURL(this.host, this.port);
+    // this.afbService.SetURL(window.location.host);
     this.wsStatus$ = this.afbService.Status$;
     this.verbs$ = this.afbService.Discover();
     this.afbService.getApis();

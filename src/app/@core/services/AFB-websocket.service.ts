@@ -109,6 +109,7 @@ export class AFBWebSocketService {
 
     Disconnect() {
         // TODO : close all subjects
+        this._NotifyServerState(false);
         this.ws.close();
     }
 
