@@ -25,56 +25,40 @@
  */
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-// import { AnalyticsService } from './@core/utils/analytics.service';
 import { NbIconLibraries } from '@nebular/theme';
-import { Subscription, Observable } from 'rxjs';
-import { AFBWebSocketService, SocketStatus, AFBApi } from './@core/services/AFB-websocket.service';
+import { environment } from '../environments/environment';
+import { AFBWebSocketService } from './@core/services/AFB-websocket.service';
 
 @Component({
-  selector: 'ngx-app',
-  template: '<router-outlet></router-outlet>',
+    selector: 'afb-ui-devtool-app',
+    template: '<router-outlet></router-outlet>',
 })
 export class AppComponent implements OnInit, OnDestroy {
-  verbs: any[];
-  dataFromServer: string;
-  wsSubscription: Subscription;
-  status;
-  host: string = 'localhost';
-  port: string = '1234';
-  ws: string;
 
-  verbs$: Observable<Array<AFBApi>>;
-  wsStatus$: Observable<SocketStatus>;
-  bindingName$: Observable<string>;
-  info$: Observable<Array<object>>;
-  apiInfo: Array<object>;
-  event$: Observable<Array<string>>;
+    constructor(
+        private iconLibraries: NbIconLibraries,
+        private afbService: AFBWebSocketService,
+    ) {
+        this.iconLibraries.registerFontPack('font-awesome', { iconClassPrefix: 'fa' });
+        this.iconLibraries.setDefaultPack('font-awesome');
+        afbService.Init('api', 'HELLO');
+    }
 
-  constructor(
-    // private analytics: AnalyticsService,
-    private iconLibraries: NbIconLibraries,
-    private afbService: AFBWebSocketService,
-  ) {
-    this.iconLibraries.registerFontPack('font-awesome', { iconClassPrefix: 'fa' });
-    this.iconLibraries.setDefaultPack('font-awesome');
-    afbService.Init('api', 'HELLO');
-  }
+    ngOnInit() {
+        // this.afbService.Init('api', 'HELLO');
 
-  ngOnInit() {
-    // this.afbService.Init('api', 'HELLO');
-    // this.analytics.trackPageViews();
-    // this.afbService.SetURL(this.host, this.port);
-    this.afbService.SetURL(window.location.host);
-    this.afbService.Connect();
-    this.wsStatus$ = this.afbService.Status$;
-  }
+        if (environment.production) {
+            this.afbService.SetURL(window.location.host);
+        } else {
+            // Useful when debugging app using 'ng serve'
+            // note that helloworld-binding must be start on localhost port 1234
+            // afb-binder --port=1234 --ldpaths=package --workdir=. --roothttp=./afb-ui-devtools/dist -vvv
+            this.afbService.SetURL('localhost', '1234');
+        }
+        this.afbService.Connect();
+    }
 
-  closeSocket() {
-    this.afbService.Disconnect();
-    this.status = 'closed';
-  }
-
-  ngOnDestroy(): void {
-    this.closeSocket();
-  }
+    ngOnDestroy(): void {
+        this.afbService.Disconnect();
+    }
 }

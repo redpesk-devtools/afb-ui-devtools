@@ -1,20 +1,38 @@
+/**
+ * @license
+ * Copyright (C) 2020-2021 IoT.bzh Company
+ * Contact: https://www.iot.bzh/licensing
+ *
+ * This file is part of the rp-webserver module of the RedPesk project.
+ *
+ * $RP_BEGIN_LICENSE$
+ * Commercial License Usage
+ *  Licensees holding valid commercial IoT.bzh licenses may use this file in
+ *  accordance with the commercial license agreement provided with the
+ *  Software or, alternatively, in accordance with the terms contained in
+ *  a written agreement between you and The IoT.bzh Company. For licensing terms
+ *  and conditions see https://www.iot.bzh/terms-conditions. For further
+ *  information use the contact form at https://www.iot.bzh/contact.
+ *
+ * GNU General Public License Usage
+ *  Alternatively, this file may be used under the terms of the GNU General
+ *  Public license version 3. This license is as published by the Free Software
+ *  Foundation and appearing in the file LICENSE.GPLv3 included in the packaging
+ *  of this file. Please review the following information to ensure the GNU
+ *  General Public License requirements will be met
+ *  https://www.gnu.org/licenses/gpl-3.0.html.
+ * $RP_END_LICENSE$
+ */
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, from, ReplaySubject, forkJoin } from 'rxjs';
 import { filter, switchMap, map, take } from 'rxjs/operators';
 import { AFB } from '../afb';
-
-export interface AFBContext {
-    token: string;
-    uuid: string | undefined;
-}
 
 export interface AFBEvent {
     jtype: string;
     event: string;
     data: any;
 }
-
-
 
 export interface SocketStatus {
     connected: boolean;
@@ -41,9 +59,8 @@ export interface AFBVerb {
 @Injectable()
 export class AFBWebSocketService {
 
-    context: AFBContext;
-    evtidx = 0;
-
+    conn_location: string;
+    conn_port: string;
     wsConnect$: Observable<Event>;
     wsDisconnect$: Observable<Event>;
     wsEvent$: Observable<Event>;
@@ -78,7 +95,16 @@ export class AFBWebSocketService {
     }
 
     SetURL(location: string, port?: string) {
+        this.conn_location = location;
+        this.conn_port = port;
         this.afb.setURL(location, port);
+    }
+
+    GetUrl(): string {
+        if (this.conn_port !== '' && this.conn_port !== undefined) {
+            return this.conn_location + ':' + this.conn_port;
+        }
+        return this.conn_location;
     }
 
     Connect(): Error {

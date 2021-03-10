@@ -43,8 +43,7 @@ export class CoreComponent implements OnInit, OnDestroy {
 
   dataFromServer: string;
   wsSubscription: Subscription;
-  status;
-  evtidx;
+  evtidx: number;
   count: number;
   query: Array<Array<Array<string>>> = [[[]]];
   host: string = 'localhost';
@@ -65,7 +64,6 @@ export class CoreComponent implements OnInit, OnDestroy {
   raw_responses: Array<Array<string>>;
   raw_events: Array<string> = [];
   event$: Observable<Array<string>>;
-  apiInfo: Array<object>;
   info: Array<object>;
   connected = true;
   initEvents$: Observable<any>;
@@ -77,8 +75,6 @@ export class CoreComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // this.afbService.SetURL(this.host, this.port);
-    this.afbService.SetURL(window.location.host);
     this.wsStatus$ = this.afbService.Status$;
     this.verbs$ = this.afbService.Discover();
     this.afbService.getApis();
@@ -115,8 +111,7 @@ export class CoreComponent implements OnInit, OnDestroy {
       query = query.split(' ').join('');
       if (this.afbService.CheckIfJson(query) === true) {
         this.afbService.Send(api + '/' + verb, query).subscribe(d => {
-          this.status = d.response;
-          let req = this.count + ': ws://' + window.location.host + '/api/' + api + '/' + verb;
+          let req = this.count + ': ws://' + this.afbService.GetUrl() + '/api/' + api + '/' + verb;
           if (query && query.trim().length > 0) {
             req += '?query=' + query;
           }
@@ -195,7 +190,6 @@ export class CoreComponent implements OnInit, OnDestroy {
 
   closeSocket() {
     this.afbService.Disconnect();
-    this.status = 'closed';
   }
 
   ngOnDestroy(): void {
