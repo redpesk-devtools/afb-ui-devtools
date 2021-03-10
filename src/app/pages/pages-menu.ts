@@ -1,9 +1,9 @@
 /**
  * @license
- * Copyright (C) 2019-2020 IoT.bzh Company
+ * Copyright (C) 2019-2021 IoT.bzh Company
  * Contact: https://www.iot.bzh/licensing
  *
- * This file is part of the rp-webserver module of the RedPesk project.
+ * This file is part of the afb-ui-devtools module of the redpesk® project.
  *
  * $RP_BEGIN_LICENSE$
  * Commercial License Usage
