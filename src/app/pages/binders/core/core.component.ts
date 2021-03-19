@@ -111,7 +111,8 @@ export class CoreComponent implements OnInit, OnDestroy {
       query = query.split(' ').join('');
       if (this.afbService.CheckIfJson(query) === true) {
         this.afbService.Send(api + '/' + verb, query).subscribe(d => {
-          let req = this.count + ': ws://' + this.afbService.GetUrl() + '/api/' + api + '/' + verb;
+          const proto = (window.location.protocol === 'https:' ? 'wss://' : 'ws://');
+          let req = this.count + ': ' + proto + this.afbService.GetUrl() + '/api/' + api + '/' + verb;
           if (query && query.trim().length > 0) {
             req += '?query=' + query;
           }

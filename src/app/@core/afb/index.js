@@ -35,7 +35,7 @@ var AFB = function (base, initialtoken) {
     var urlws = initial.url = initial.url || initial.scheme+"//"+initial.host+"/"+initial.base;
 
     var setURL = function (location, port) {
-        let u = 'ws://' + location;
+        let u = (window.location.protocol == "https:" ? "wss://" : "ws://") + location;
         if (port) {
             u += ':' + port;
         }
