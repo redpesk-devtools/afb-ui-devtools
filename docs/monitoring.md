@@ -35,7 +35,9 @@ sudo zypper install afb-ui-devtools
 Once a binding is running, to launch the Binder Devtool UI enter   
 `[host]:[port]/devtools/` in your browser address bar.  
 
-*For example: `localhost:3333/devtools/` for a binding running on localhost, on port 3333.*
+*For example: go on `localhost:30001/devtools/` to see UI Devtool of the helloworld binding running on localhost, on port 30001.*
+*NOTE: Be sure your binding is running first and the port is correct.*
+*NOTE: On Qemu, port forwarding could be used to access the webui devtool inside the qemu. See [Qemu section]{% chapter_link boards-doc.qemu %} for details.*
 
 ## Navigation Bar
 
