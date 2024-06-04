@@ -44,7 +44,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -136,11 +135,16 @@
       }
     }
   },
-  "defaultProject": "afb-ui-devtools",
   "schematics": {
     "@schematics/angular:component": {
       "style": "scss"
     },
-    "@schematics/angular:directive": {}
+    "@schematics/angular:directive": {},
+    "@angular-eslint/schematics:application": {
+      "setParserOptionsProject": true
+    },
+    "@angular-eslint/schematics:library": {
+      "setParserOptionsProject": true
+    }
   }
 }
