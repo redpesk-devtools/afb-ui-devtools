@@ -108,25 +108,20 @@ export class CoreComponent implements OnInit, OnDestroy {
       if (verb.charAt(0) === '/') {
         verb = verb.substring(1);
       }
-      query = query.split(' ').join('');
-      if (this.afbService.CheckIfJson(query) === true) {
-        this.afbService.Send(api + '/' + verb, query).subscribe(d => {
-          const proto = (window.location.protocol === 'https:' ? 'wss://' : 'ws://');
-          let req = this.count + ': ' + proto + this.afbService.GetUrl() + '/api/' + api + '/' + verb;
-          if (query && query.trim().length > 0) {
-            req += '?query=' + query;
-          }
-          this.questions.unshift(this.afbService.syntaxHighlight(req));
-          this._questionsSubject.next(this.questions);
-          const outcome = (d.request.status === 'success') ? ': OK :' : ': ERROR :';
-          const res = [this.count + outcome + this.afbService.syntaxHighlight(d)];
-          this.responses.unshift(res);
-          this._responsesSubject.next(this.responses);
-          this.count++;
-        });
-      } else {
-        this.toastrService.show('Invalid parameters: should be JSON type. Minimum query: {}. Use ""');
+      const proto = (window.location.protocol === 'https:' ? 'wss://' : 'ws://');
+      let req = this.count + ': ' + proto + this.afbService.GetUrl() + '/api/' + api + '/' + verb;
+      if (query && query.trim().length > 0) {
+        req += '?query=' + query;
       }
+      this.afbService.Send(api + '/' + verb, query).subscribe(d => {
+        this.questions.unshift(this.afbService.syntaxHighlight(req));
+        this._questionsSubject.next(this.questions);
+        const outcome = (d.request.status === 'success') ? ': OK :' : ': ERROR :';
+        const res = [this.count + outcome + this.afbService.syntaxHighlight(d)];
+        this.responses.unshift(res);
+        this._responsesSubject.next(this.responses);
+        this.count++;
+      });
     } else {
       this.toastrService.show('Websocket or binding disconnected, request unsendable');
     }
@@ -153,7 +148,10 @@ export class CoreComponent implements OnInit, OnDestroy {
   }
 
   getUsage(verb: any, usage: any): string {
-    const data: string = !verb ? JSON.stringify(usage) : (!verb.data ? JSON.stringify(usage) : JSON.stringify(verb.data));
+    let data: string = !verb ? JSON.stringify(usage) : (!verb.data ? JSON.stringify(usage) : JSON.stringify(verb.data));
+    if (data === '{}') {
+      data = 'use your query with {} or [] or "" or number';
+    }
     return data;
   }
 

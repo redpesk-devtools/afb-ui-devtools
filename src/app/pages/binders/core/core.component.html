@@ -122,7 +122,7 @@
                                                                 *ngIf="verb.sample !== undefined && verb.sample.length > 0"
                                                                 status="info" (click)="show = !show;">Samples</button>
                                                         </div>
-                                                        <nb-card *ngIf="show">
+                                                        <nb-card *ngIf="!show">
                                                             <button nbButton size="tiny"
                                                                 *ngFor="let sample of verb.sample"
                                                                 class="d-inline-block font-weight-normal text-lowercase text-left text-truncate"
@@ -133,6 +133,9 @@
                                                         <textarea nbInput fullWidth class="font-weight-light"
                                                             [(ngModel)]="query[i][j][k]"
                                                             [placeholder]="verb.usage ? getUsage(action, verb.usage) : ''"></textarea>
+                                                            <!-- <textarea nbInput fullWidth class="font-weight-light"
+                                                            [(ngModel)]="query[i][j][k]"
+                                                            placeholder='use {} or [] or "" or number'></textarea> -->
                                                         <button nbButton shape="round" status="primary" size="tiny"
                                                             class="float-right"
                                                             (click)="!verb.verb ? callBinder(api.api, verb.uid, query[i][j][k], wsstat?.connected) : callBinder(api.api, verb.verb, query[i][j][k], wsstat?.connected)">Send</button>
@@ -150,97 +153,89 @@
         </div>
     </div>
     <div class="col-lg-8 col-md-6 col-sm-12 colDisplay">
-        <div class="output sticky-top scrollheight">
-            <nb-card *ngIf="(questions$ | async) as questions; else empty" size="tiny">
-                <nb-card-header class="m-0 p-0">QUESTIONS<button nbButton shape="round" ghost size="small"
-                        status="primary" class="float-right" (click)="resetQuestions()">
-                        <nb-icon icon="trash"></nb-icon>
-                    </button>
-                    <button nbButton shape="round" ghost size="small" status="primary" class="float-right"
-                        (click)="copyToClipboard(questions)">
-                        <nb-icon icon="copy-outline"></nb-icon>
-                    </button>
-                </nb-card-header>
-                <nb-card-body class="bg-white">
-                    <pre *ngFor="let question of questions" [innerHTML]="question"></pre>
-                </nb-card-body>
-            </nb-card>
-            <ng-template #empty>
-                <nb-card size="tiny">
-                    <nb-card-header class="m-0 p-0">QUESTIONS<button nbButton shape="round" ghost size="small"
-                            status="primary" class="float-right" (click)="resetQuestions()">
-                            <nb-icon icon="trash"></nb-icon>
-                        </button>
-                        <button nbButton shape="round" ghost size="small" status="primary" class="float-right"
-                            (click)="copyToClipboard(questions)">
-                            <nb-icon icon="copy-outline"></nb-icon>
-                        </button>
-                    </nb-card-header>
-                    <nb-card-body class="bg-white"></nb-card-body>
-                </nb-card>
-            </ng-template>
-            <nb-card *ngIf="(responses$ | async) as responses; else emptyrep" size="small">
-                <nb-card-header class="m-0 p-0">RESPONSES
-                    <button nbButton shape="round" size="small" ghost status="primary" class="float-right"
-                        (click)="resetResponses()">
-                        <nb-icon icon="trash"></nb-icon>
-                    </button>
-                    <button nbButton shape="round" ghost size="small" status="primary" class="float-right"
-                        (click)="copyToClipboard(responses)">
-                        <nb-icon icon="copy-outline"></nb-icon>
-                    </button>
-                </nb-card-header>
-                <nb-card-body class="bg-white">
-                    <pre *ngFor="let response of responses" [innerHTML]="response"></pre>
-                </nb-card-body>
-            </nb-card>
-            <ng-template #emptyrep>
-                <nb-card size="small">
-                    <nb-card-header class="m-0 p-0">RESPONSES
-                        <button nbButton shape="round" size="small" ghost status="primary" class="float-right"
-                            (click)="resetResponses()">
-                            <nb-icon icon="trash"></nb-icon>
-                        </button>
-                        <button nbButton shape="round" ghost size="small" status="primary" class="float-right"
-                            (click)="copyToClipboard(responses)">
-                            <nb-icon icon="copy-outline"></nb-icon>
-                        </button>
-                    </nb-card-header>
-                    <nb-card-body class="bg-white">
-                    </nb-card-body>
-                </nb-card>
-            </ng-template>
+        <div class="" style="width: 98%;">
+            <nb-accordion>
+                <nb-accordion-item expanded="true">
+                    <nb-accordion-item-header>
+                        <span class="ml-4">QUERIES</span>
+                        <div class="header-actions">
+                            <button nbButton shape="round" ghost size="small" status="primary" (click)="$event.stopPropagation();resetQuestions()">
+                                <nb-icon icon="trash"></nb-icon>
+                            </button>
+                            <button nbButton shape="round" ghost size="small" status="primary" (click)="$event.stopPropagation();copyToClipboard(questions)">
+                                <nb-icon icon="copy-outline"></nb-icon>
+                            </button>
+                        </div>
+                    </nb-accordion-item-header>
+                    <nb-accordion-item-body>
+                        <nb-card *ngIf="(questions$ | async) as questions; else empty" style="resize: vertical; height: 100%; overflow: auto;">
+                            <nb-card-body class="bg-white">
+                                <pre *ngFor="let question of questions" [innerHTML]="question"></pre>
+                            </nb-card-body>
+                        </nb-card>
+                        <ng-template #empty>
+                            <nb-card>
+                                <nb-card-body class="bg-white"></nb-card-body>
+                            </nb-card>
+                        </ng-template>
+                    </nb-accordion-item-body>
+                </nb-accordion-item>
+            </nb-accordion>
+            <nb-accordion>
+                <nb-accordion-item expanded="true">
+                    <nb-accordion-item-header>
+                        <span class="ml-4">RESPONSES</span>
+                        <div class="header-actions">
+                            <button nbButton shape="round" ghost size="small" status="primary" (click)="$event.stopPropagation();resetResponses()">
+                                <nb-icon icon="trash"></nb-icon>
+                            </button>
+                            <button nbButton shape="round" ghost size="small" status="primary" (click)="$event.stopPropagation();copyToClipboard(responses)">
+                                <nb-icon icon="copy-outline"></nb-icon>
+                            </button>
+                        </div>
+                    </nb-accordion-item-header>
+                    <nb-accordion-item-body>
+                        <nb-card *ngIf="(responses$ | async) as responses; else emptyrep"  style="resize: vertical; height: 100%; overflow: auto;">
+                            <nb-card-body class="bg-white">
+                                <pre *ngFor="let response of responses" [innerHTML]="response"></pre>
+                            </nb-card-body>
+                        </nb-card>
+                        <ng-template #emptyrep>
+                            <nb-card>
+                                <nb-card-body class="bg-white"></nb-card-body>
+                            </nb-card>
+                        </ng-template>
+                    </nb-accordion-item-body>
+                </nb-accordion-item>
+            </nb-accordion>
 
-            <nb-card *ngIf="(event$ | async) as events; else emptyev" size="small">
-                <nb-card-header class="m-0 p-0">EVENTS<button nbButton shape="round" size="small" ghost status="primary"
-                        class="float-right" (click)="resetEvents()">
-                        <nb-icon icon="trash"></nb-icon>
-                    </button>
-                    <button nbButton shape="round" ghost size="small" status="primary" class="float-right"
-                        (click)="copyToClipboard(events)">
-                        <nb-icon icon="copy-outline"></nb-icon>
-                    </button>
-                </nb-card-header>
-                <nb-card-body class="bg-white">
-                    <pre *ngFor="let event of events" [innerHTML]="event" id="event"></pre>
-                </nb-card-body>
-            </nb-card>
-            <ng-template #emptyev>
-                <nb-card size="small">
-                    <nb-card-header class="m-0 p-0">EVENTS
-                        <button nbButton shape="round" size="small" ghost status="primary" class="float-right"
-                            (click)="resetEvents()">
-                            <nb-icon icon="trash"></nb-icon>
-                        </button>
-                        <button nbButton shape="round" ghost size="small" status="primary" class="float-right"
-                            (click)="copyToClipboard(events)">
-                            <nb-icon icon="copy-outline"></nb-icon>
-                        </button>
-                    </nb-card-header>
-                    <nb-card-body class="bg-white">
-                    </nb-card-body>
-                </nb-card>
-            </ng-template>
+            <nb-accordion>
+                <nb-accordion-item expanded="true">
+                    <nb-accordion-item-header>
+                        <span class="ml-4">EVENTS</span>
+                        <div class="header-actions">
+                            <button nbButton shape="round" ghost size="small" status="primary" (click)="$event.stopPropagation();resetEvents()">
+                                <nb-icon icon="trash"></nb-icon>
+                            </button>
+                            <button nbButton shape="round" ghost size="small" status="primary" (click)="$event.stopPropagation();copyToClipboard(events)">
+                                <nb-icon icon="copy-outline"></nb-icon>
+                            </button>
+                        </div>
+                    </nb-accordion-item-header>
+                    <nb-accordion-item-body>
+                        <nb-card *ngIf="(event$ | async) as events; else emptyev" style="resize: vertical; height: 100%; overflow: auto;">
+                            <nb-card-body class="bg-white">
+                                <pre *ngFor="let event of events" [innerHTML]="event" id="event"></pre>
+                            </nb-card-body>
+                        </nb-card>
+                        <ng-template #emptyev>
+                            <nb-card>
+                                <nb-card-body class="bg-white"></nb-card-body>
+                            </nb-card>
+                        </ng-template>
+                    </nb-accordion-item-body>
+                </nb-accordion-item>
+            </nb-accordion>
         </div>
     </div>
 </div>

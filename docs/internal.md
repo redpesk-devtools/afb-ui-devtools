@@ -55,6 +55,6 @@
 ## Run the application
 
 ```bash
-afb-binder --binding=/usr/redpesk/helloworld-binding/lib/afb-helloworld-skeleton.so:./basic-config.json -vvv --roothttp $HOME/PATH_TO/afb-ui-devtools/dist
+afb-binder --binding=/usr/redpesk/helloworld-binding/lib/afb-helloworld-skeleton.so: -vvv --roothttp $HOME/PATH_TO/afb-ui-devtools/dist -M
 ```
 Then open http://localhost:1234 in your browser
