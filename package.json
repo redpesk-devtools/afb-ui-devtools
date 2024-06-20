@@ -15,6 +15,7 @@
     "build": "ng build",
     "watch": "ng build --watch --aot",
     "build:prod": "ng build --configuration production --aot",
+    "build:tar": "ng build --configuration production --aot && mkdir -p afb-ui-devtools-prebuild-$(git describe --always --tags --match \"[0-9]*\" | cut -d '.' -f 1-3) && mv dist/* afb-ui-devtools-prebuild-$(git describe --always --tags --match \"[0-9]*\" | cut -d '.' -f 1-3)/ && tar -czf afb-ui-devtools-prebuild-$(git describe --always --tags --match \"[0-9]*\" | cut -d '.' -f 1-3).tar.gz afb-ui-devtools-prebuild-$(git describe --always --tags --match \"[0-9]*\" | cut -d '.' -f 1-3) && rm -rf afb-ui-devtools-prebuild-$(git describe --always --tags --match \"[0-9]*\" | cut -d '.' -f 1-3)",
     "test": "ng test",
     "test:coverage": "rimraf coverage && npm run test -- --code-coverage",
     "lint": "ng lint",
