@@ -41,7 +41,7 @@
   git clone http://git.ovh.iot/redpesk/redpesk-devtools/afb-ui-devtools.git
   ```
 
-  Install dependencies
+  Install node dependencies
 
   ```bash
   npm install
@@ -50,6 +50,12 @@
 
   ```bash
   npm run build:prod
+  ```
+
+  Build the application for production with tar and last tag version
+
+  ```bash
+  npm run build:tar
   ```
 
 ## Run the application

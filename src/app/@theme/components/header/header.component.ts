@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
+import { environment } from '../../../../environments/environment.prod';
 
 import { map, takeUntil } from 'rxjs/operators';
 import { Subject, Observable } from 'rxjs';
@@ -10,7 +11,9 @@ import { AFBWebSocketService, SocketStatus } from '../../../@core/services/AFB-w
   styleUrls: ['./header.component.scss'],
   templateUrl: './header.component.html',
 })
+
 export class HeaderComponent implements OnInit, OnDestroy {
+  gitTag: string = environment.GIT_TAG;
 
   private destroy$: Subject<void> = new Subject<void>();
   windowMonitoring;

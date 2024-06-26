@@ -12,10 +12,11 @@
   "scripts": {
     "ng": "ng",
     "conventional-changelog": "conventional-changelog",
+    "prebuild": "node set-git-tag.js",
     "build": "ng build",
     "watch": "ng build --watch --aot",
-    "build:prod": "ng build --configuration production --aot",
-    "build:tar": "PREFIX='afb-ui-devtools-prebuild-' VERSION=$(git describe --tags --abbrev=0) && ng build --configuration production --aot && mkdir -p $PREFIX$VERSION && mv dist/* $PREFIX$VERSION/ && tar -czf $PREFIX$VERSION.tar.gz $PREFIX$VERSION && rm -rf $PREFIX$VERSION",
+    "build:prod": "node set-git-tag.js && ng build --configuration production --aot",
+    "build:tar": "node set-git-tag.js && PREFIX='afb-ui-devtools-prebuild-' VERSION=$(git describe --tags --abbrev=0) && ng build --configuration production --aot && mkdir -p $PREFIX$VERSION && mv dist/* $PREFIX$VERSION/ && tar -czf $PREFIX$VERSION.tar.gz $PREFIX$VERSION && rm -rf $PREFIX$VERSION",
     "test": "ng test",
     "test:coverage": "rimraf coverage && npm run test -- --code-coverage",
     "lint": "ng lint",
