@@ -28,7 +28,9 @@ import { NgModule } from '@angular/core';
 import { ThemeModule } from '../../@theme/theme.module';
 import { CoreComponent } from './core/core.component';
 import { NbCardModule, NbButtonModule, NbAccordionModule, NbInputModule, NbIconModule,
-  NbToastrModule, NbPopoverModule, NbToggleModule } from '@nebular/theme';
+  NbToastrModule, NbPopoverModule, NbToggleModule, 
+  NbTooltipModule,
+  NbSelectModule} from '@nebular/theme';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
@@ -43,6 +45,8 @@ import { FormsModule } from '@angular/forms';
     NbToggleModule,
     NbPopoverModule,
     FormsModule,
+    NbTooltipModule,
+    NbSelectModule,
   ],
   declarations: [
     CoreComponent,

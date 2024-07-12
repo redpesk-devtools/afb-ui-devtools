@@ -4,7 +4,7 @@
       <nb-icon icon="menu-2-outline"></nb-icon>
     </a> -->
     <a class="logo" href="#" (click)="navigateHome()"> <span>Binder Devtool</span> </a>
-    <div style="font-size: 12px; padding: 0 1.25rem;"><em>version {{gitTag}}</em></div>
+    <div style="font-size: 12px; padding: 0 1rem;"><em style="color: var(--button-ghost-basic-text-color); font-weight: 500;">version {{gitTag}}</em></div>
   </div>
   <div class="header-container">
     <div *ngIf="(wsStatus$|async).connected; else disconnected">

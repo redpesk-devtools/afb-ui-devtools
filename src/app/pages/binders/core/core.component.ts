@@ -24,11 +24,11 @@
  * $RP_END_LICENSE$
  */
 
-import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, Renderer2, ViewChild } from '@angular/core';
 // import { DOCUMENT } from '@angular/common';
 import { Subscription, Observable, BehaviorSubject, Subject } from 'rxjs';
 import { AFBWebSocketService, SocketStatus, AFBApi } from '../../../@core/services/AFB-websocket.service';
-import { NbToastrService } from '@nebular/theme';
+import { NbPopoverDirective, NbToastrService } from '@nebular/theme';
 import { map } from 'rxjs/operators';
 
 
@@ -68,9 +68,20 @@ export class CoreComponent implements OnInit, OnDestroy {
   connected = true;
   initEvents$: Observable<any>;
 
+  displayMode: string = 'default'; // Default display mode in responses section
+
+  optionsSelect: any = [
+    'default',
+    'line',
+    'columns'
+  ]
+
+  @ViewChild(NbPopoverDirective) popover: NbPopoverDirective;
+
   constructor(
     // @Inject(DOCUMENT) private document: Document,
     private afbService: AFBWebSocketService,
+    private renderer: Renderer2,
     private toastrService: NbToastrService) {
   }
 
@@ -138,7 +149,7 @@ export class CoreComponent implements OnInit, OnDestroy {
       if (call === 'info') {
       this.query[i][j][k] = '';
       } else {
-        this.query[i][j][k] = '{}';
+        this.query[i][j][k] = '';
       }
     }
   }
@@ -194,4 +205,23 @@ export class CoreComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.closeSocket();
   }
+
+  popOverToggle($event) {
+    $event.stopPropagation();
+    this.popover.toggle();
+  }
+
+  chooseDisplayMode(mode: string) {
+    this.displayMode = mode;
+    const element = document.querySelector('.responses nb-card-body') as HTMLElement;
+
+    if (mode === 'default') {
+      this.renderer.setStyle(element, 'display', 'block');
+    } else if (mode === 'line') {
+      this.renderer.setStyle(element, 'display', 'ruby');
+    } else if (mode === 'columns') {
+      this.renderer.setStyle(element, 'display', '-webkit-box');
+    }
+  }
+
 }

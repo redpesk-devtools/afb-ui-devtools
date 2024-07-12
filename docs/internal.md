@@ -46,13 +46,13 @@
   ```bash
   npm install
   ```
-  Build the application for production
+  Build the application for production with last git tag version
 
   ```bash
   npm run build:prod
   ```
 
-  Build the application for production with tar and last tag version
+  Build the application for production with tar and last git tag version
 
   ```bash
   npm run build:tar

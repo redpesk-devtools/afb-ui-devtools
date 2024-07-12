@@ -109,6 +109,13 @@ nb-accordion-item-header {
   padding-right: 1rem;
 }
 
+.scroll-xy-content {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 100vh;
+  padding-right: 1rem;
+}
+
 .infoDisplay {
   white-space: nowrap;
   width: 100%;
@@ -168,6 +175,32 @@ span {
 .verbName {
   pointer-events: none;
   text-transform: none !important;
+}
+
+.queries nb-card, .responses nb-card, .events nb-card {
+  margin: 0;
+}
+
+.queries nb-card-body, .responses nb-card-body, .events nb-card-body {
+  padding: 0;
+}
+
+.queries pre {
+  margin-bottom: auto;
+}
+
+.accordion-header-font, ::ng-deep .select-button, ::ng-deep .option-list {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+.display-line {
+  display: block;
+}
+
+.display-column {
+  display: flex;
+  flex-direction: column;
 }
 
 @media screen and (max-width: 1000px) {

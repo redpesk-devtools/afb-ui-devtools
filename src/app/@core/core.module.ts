@@ -4,8 +4,7 @@ import { CommonModule } from '@angular/common';
 import { throwIfAlreadyLoaded } from './module-import-guard';
 import { AnalyticsService } from './utils';
 import { MockDataModule } from './mock/mock-data.module';
-
-
+import { NbTooltipModule } from '@nebular/theme';
 
 export const NB_CORE_PROVIDERS = [
   ...MockDataModule.forRoot().providers,
@@ -15,6 +14,7 @@ export const NB_CORE_PROVIDERS = [
 @NgModule({
   imports: [
     CommonModule,
+    NbTooltipModule,
   ],
   exports: [],
   declarations: [],
