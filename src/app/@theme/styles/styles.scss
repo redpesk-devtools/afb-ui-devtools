@@ -1,12 +1,23 @@
 
 // themes - our custom or/and out of the box themes
 @import 'themes';
+
+// Manually define missing variable if needed
+$gutters: (
+  sm: 1.5rem,
+  md: 2rem,
+  lg: 2.5rem
+);
+
 // framework component themes (styles tied to theme variables)
-@import '@nebular/theme/styles/globals';
 @import 'bootstrap/scss/functions';
 @import 'bootstrap/scss/variables';
 @import 'bootstrap/scss/mixins';
 @import 'bootstrap/scss/grid';
+@import 'bootstrap/scss/reboot';
+@import 'bootstrap/scss/bootstrap';
+@import '@nebular/theme/styles/globals';
+
 // loading progress bar theme
 @import './pace.theme';
 @import './layout';

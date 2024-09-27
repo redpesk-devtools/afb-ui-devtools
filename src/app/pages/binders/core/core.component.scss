@@ -53,10 +53,21 @@ ng-template {
 ::ng-deep .nb-theme-default nb-toggle .toggle-switcher {
   height: 1rem;
   width: 1rem;
+  margin: 0;
+}
+
+::ng-deep .nb-theme-default nb-toggle .toggle.checked .toggle-switcher {
+  left: calc(100% - 1.0625rem + 1px) !important;
 }
 
 ::ng-deep .nb-theme-default nb-toggle .toggle {
   height: 1rem;
+  width: 30px;
+}
+
+::ng-deep .nb-theme-default nb-toggle nb-icon {
+  height: .4rem;
+  width: .4rem;
 }
 
 ::ng-deep [dir="ltr"] .nb-theme-default nb-toggle .toggle.checked .toggle-switcher {
@@ -106,7 +117,8 @@ nb-accordion-item-header {
   overflow-x: hidden;
   overflow-y: auto;
   max-height: 100vh;
-  padding-right: 1rem;
+  // padding-right: 1rem;
+  padding: 0px;
 }
 
 .scroll-xy-content {
@@ -211,4 +223,42 @@ span {
   nb-card {
     margin-left: 1.25rem;
   }
+}
+
+.container-fluid {
+  height: 100vh; /* Full viewport height */
+}
+
+.sidebar {
+  height: 100vh;
+}
+
+.resizer {
+  width: 2px;
+  cursor: ew-resize;
+  background-color: #d9d9d9a6;
+  height: 100vh;
+}
+
+.content {
+  height: 100vh;
+  overflow: auto;
+  background-color: #fff;
+}
+
+.section {
+  background-color: #f8f9fa;
+  overflow: auto;
+  padding: 0px;
+}
+
+.vertical-resizer {
+  height: 3px;
+  cursor: ns-resize;
+  background-color: #d9d9d9a6;
+}
+
+::ng-deep nb-layout.with-scroll .scrollable-container {
+  height: auto;
+  overflow: unset;
 }

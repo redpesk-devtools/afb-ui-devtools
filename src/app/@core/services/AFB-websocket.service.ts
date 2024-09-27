@@ -26,13 +26,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, from, ReplaySubject, forkJoin } from 'rxjs';
 import { filter, switchMap, map, take } from 'rxjs/operators';
-import { AFB } from '../afb';
-
-export interface AFBEvent {
-    jtype: string;
-    event: string;
-    data: any;
-}
+import { AFB, AFBEvent, AFBReply } from '@redpesk/afb-ws';
 
 export interface SocketStatus {
     connected: boolean;
@@ -59,15 +53,15 @@ export interface AFBVerb {
 @Injectable()
 export class AFBWebSocketService {
 
-    conn_location: string;
-    conn_port: string;
-    wsConnect$: Observable<Event>;
-    wsDisconnect$: Observable<Event>;
-    wsEvent$: Observable<Event>;
-    Status$: Observable<SocketStatus>;
-    InitDone$: Observable<boolean>;
-    AutoReconnect$: Observable<boolean>;
-    event$: Observable<Array<string>>;
+    conn_location?: string;
+    conn_port?: string;
+    wsConnect$?: Observable<Event>;
+    wsDisconnect$?: Observable<Event>;
+    wsEvent$?: Observable<Event>;
+    Status$?: Observable<SocketStatus>;
+    InitDone$?: Observable<boolean>;
+    AutoReconnect$?: Observable<boolean>;
+    event$?: Observable<Array<string>>;
 
     private ws: any;
     private _wsConnectSubject = new Subject<Event>();
@@ -83,10 +77,7 @@ export class AFBWebSocketService {
 
 
     Init(base: string, initialToken?: string) {
-        this.afb = new AFB({
-            base: base,
-            token: initialToken
-        });
+        this.afb = new AFB(base, initialToken);
         this.wsConnect$ = this._wsConnectSubject.asObservable();
         this.wsDisconnect$ = this._wsDisconnectSubject.asObservable();
         this.wsEvent$ = this._wsEventSubject.asObservable();
@@ -101,10 +92,7 @@ export class AFBWebSocketService {
     }
 
     GetUrl(): string {
-        if (this.conn_port !== '' && this.conn_port !== undefined) {
-            return this.conn_location + ':' + this.conn_port;
-        }
-        return this.conn_location;
+        return this.conn_location + (this.conn_port ? ':' + this.conn_port : '');
     }
 
     Connect(): Error {
@@ -129,7 +117,7 @@ export class AFBWebSocketService {
             this._NotifyServerState(false);
             this._wsDisconnectSubject.next(event);
         };
-        return null;
+        return new Error('Websocket connection failed');
     }
 
 
@@ -148,10 +136,10 @@ export class AFBWebSocketService {
             filter(done => done),
             switchMap(() => {
                 return from(this.ws.call(method, param)
-                    .then((obj) => {
+                    .then((obj: AFBReply) => {
                         return obj;
                     },
-                    ).catch((err) => {
+                    ).catch((err: AFBReply) => {
                         return (err);
                     },
                     )
@@ -185,7 +173,7 @@ export class AFBWebSocketService {
         }
         json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
-            function (match) {
+            function (match: string) {
                 let cls = 'text-info';
                 if (/^"/.test(match)) {
                     if (/:$/.test(match)) {
@@ -208,7 +196,7 @@ export class AFBWebSocketService {
     OnEvent(eventName: string): Observable<AFBEvent> {
         // Convert websocket Event based on callback to an Observable
         return Observable.create(
-            observer => {
+            (            observer: { next: (arg0: AFBEvent) => void; }) => {
                 this.ws.onevent(eventName, (event: AFBEvent) => {
                     observer.next(event);
                 });
@@ -228,12 +216,14 @@ export class AFBWebSocketService {
     getInfoVerbs(): Observable<Array<object>> {
         return this.getApis().pipe(
             map((data) => {
-                const tasks$ = [];
+                const tasks$: Observable<{ api: string; info: any; } | undefined>[] = [];
                 data.forEach(api => {
                     tasks$.push(this.Send(api + '/info', {}).pipe(
                         map(d => {
                             if (d.response) {
                                 return { 'api': api, 'info': d.response };
+                            } else {
+                                return undefined;
                             }
                         })
                     ));

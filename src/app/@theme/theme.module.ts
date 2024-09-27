@@ -13,6 +13,7 @@ import {
   NbIconModule,
   NbThemeModule,
   NbToggleModule,
+  NbCardModule,
 } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 
@@ -50,6 +51,7 @@ const NB_MODULES = [
   NbIconModule,
   NbEvaIconsModule,
   NbToggleModule,
+  NbCardModule,
 ];
 const COMPONENTS = [
   SwitcherComponent,

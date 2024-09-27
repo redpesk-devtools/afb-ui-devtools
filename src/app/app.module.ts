@@ -10,6 +10,7 @@ import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
+
 import { CoreModule } from './@core/core.module';
 import { ThemeModule } from './@theme/theme.module';
 import { AppComponent } from './app.component';
@@ -24,6 +25,7 @@ import {
   NbWindowModule,
   NbLayoutModule,
 } from '@nebular/theme';
+
 import { AFBWebSocketService } from './@core/services/AFB-websocket.service';
 
 @NgModule({

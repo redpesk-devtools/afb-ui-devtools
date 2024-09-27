@@ -1,4 +1,13 @@
 {
+    // Configure glob patterns for excluding files and folders.
+    "files.exclude": {
+        ".git": false,
+        ".tmp": false,
+        "tmp/": false,
+        "node_modules/": false,
+        ".angular/": false,
+        "dist": false
+    },
     "cSpell.words": [
         "helloworld",
         "redpesk"
