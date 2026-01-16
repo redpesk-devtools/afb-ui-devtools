@@ -5,5 +5,5 @@
  */
 export const environment = {
   production: true,
-  GIT_TAG: '1.0.6'
+  GIT_TAG: '1.0.7'
 };
