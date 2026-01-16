@@ -74,7 +74,7 @@ ng-template {
   left: calc(100% - 1rem - 1px - 0.0625rem);
 }
 
-::ng-deep .nb-theme-default nb-accordion nb-accordion-item:not(.collapsed) + nb-accordion-item nb-accordion-item-header {
+::ng-deep .nb-theme-default nb-accordion nb-accordion-item:not(.collapsed)+nb-accordion-item nb-accordion-item-header {
   border-top: none;
 }
 
@@ -116,7 +116,7 @@ nb-accordion-item-header {
 .scrollheight {
   overflow-x: hidden;
   overflow-y: auto;
-  max-height: 100vh;
+  height: calc(100vh - 60px); // Adjust based on header/navbar height
   // padding-right: 1rem;
   padding: 0px;
 }
@@ -189,11 +189,15 @@ span {
   text-transform: none !important;
 }
 
-.queries nb-card, .responses nb-card, .events nb-card {
+.queries nb-card,
+.responses nb-card,
+.events nb-card {
   margin: 0;
 }
 
-.queries nb-card-body, .responses nb-card-body, .events nb-card-body {
+.queries nb-card-body,
+.responses nb-card-body,
+.events nb-card-body {
   padding: 0;
 }
 
@@ -201,7 +205,9 @@ span {
   margin-bottom: auto;
 }
 
-.accordion-header-font, ::ng-deep .select-button, ::ng-deep .option-list {
+.accordion-header-font,
+::ng-deep .select-button,
+::ng-deep .option-list {
   font-size: 12px !important;
   font-weight: 600 !important;
 }
@@ -226,7 +232,8 @@ span {
 }
 
 .container-fluid {
-  height: 100vh; /* Full viewport height */
+  height: 100vh;
+  /* Full viewport height */
 }
 
 .sidebar {
@@ -250,6 +257,9 @@ span {
   background-color: #f8f9fa;
   overflow: auto;
   padding: 0px;
+  transition: height 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
 }
 
 .vertical-resizer {

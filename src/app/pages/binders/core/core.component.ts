@@ -91,9 +91,17 @@ export class CoreComponent implements OnInit, OnDestroy {
   section2Height: number = (window.innerHeight - 64) / 3;
   section3Height: number = (window.innerHeight - 64) / 3;
 
+  // Track accordion states
+  section1Expanded: boolean = true;
+  section2Expanded: boolean = true;
+  section3Expanded: boolean = true;
+
   isVerticalResizing: boolean = false;
   activeSection: number = 0;
   lastDownY: number = 0;
+
+  // Header height when accordion is collapsed
+  readonly COLLAPSED_HEADER_HEIGHT = 45;
 
   // Start resizing when the mouse is down on the resizer
   startResizing(event: MouseEvent): void {
@@ -112,6 +120,7 @@ export class CoreComponent implements OnInit, OnDestroy {
 
   // Detect mouse move for resizing
   @HostListener('window:mousemove', ['$event'])
+
   onMouseMove(event: MouseEvent): void {
     // Horizontal resizing for sidebar
     if (this.isResizing) {
@@ -126,27 +135,35 @@ export class CoreComponent implements OnInit, OnDestroy {
     if (this.isVerticalResizing) {
       const delta = event.clientY - this.lastDownY;
       if (this.activeSection === 1) {
-        const newHeight1 = this.section1Height + delta;
-        const newHeight2 = this.section2Height - delta;
-        if (newHeight1 > 50 && newHeight2 > 50) {
-          this.section1Height = newHeight1;
-          this.section2Height = newHeight2;
-          this.lastDownY = event.clientY;
+        // Only allow resizing if both sections are expanded
+        if (this.section1Expanded && this.section2Expanded) {
+          const newHeight1 = this.section1Height + delta;
+          const newHeight2 = this.section2Height - delta;
+          if (newHeight1 > 50 && newHeight2 > 50) {
+            this.section1Height = newHeight1;
+            this.section2Height = newHeight2;
+            this.lastDownY = event.clientY;
+          }
         }
       } else if (this.activeSection === 2) {
-        const newHeight2 = this.section2Height + delta;
-        const newHeight3 = this.section3Height - delta;
-        if (newHeight2 > 50 && newHeight3 > 50) {
-          this.section2Height = newHeight2;
-          this.section3Height = newHeight3;
-          this.lastDownY = event.clientY;
+        // Only allow resizing if both sections are expanded
+        if (this.section2Expanded && this.section3Expanded) {
+          const newHeight2 = this.section2Height + delta;
+          const newHeight3 = this.section3Height - delta;
+          if (newHeight2 > 50 && newHeight3 > 50) {
+            this.section2Height = newHeight2;
+            this.section3Height = newHeight3;
+            this.lastDownY = event.clientY;
+          }
         }
       } else if (this.activeSection === 3) {
-        // Resize section 3 upwards
-        const newHeight3 = this.section3Height + delta;
-        if (newHeight3 > 50) {
-          this.section3Height = newHeight3;
-          this.lastDownY = event.clientY;
+        // Resize section 3 upwards (only if expanded)
+        if (this.section3Expanded) {
+          const newHeight3 = this.section3Height + delta;
+          if (newHeight3 > 50) {
+            this.section3Height = newHeight3;
+            this.lastDownY = event.clientY;
+          }
         }
       }
     }
@@ -159,35 +176,63 @@ export class CoreComponent implements OnInit, OnDestroy {
     this.isVerticalResizing = false;
   }
 
-  // setSection1Height(expanded: boolean) {
-  //   this.section1Height = expanded ? (window.innerHeight - 64) / 3 : 39;
-  // }
-
-  onSection1HeaderClick(event: MouseEvent): void {
-    const headerElement = event.currentTarget as HTMLElement;
-    if (headerElement.classList.contains('accordion-item-header-expanded')) {
-      this.section1Height = 45;
-    } else if (headerElement.classList.contains('accordion-item-header-collapsed')) {
-      this.section1Height = (window.innerHeight - 64) / 3;
-    }
+  // Handle window resize to redistribute space
+  @HostListener('window:resize', ['$event'])
+  onWindowResize(event: Event): void {
+    this.redistributeSpace();
   }
 
-  onSection2HeaderClick(event: MouseEvent): void {
-    const headerElement = event.currentTarget as HTMLElement;
-    if (headerElement.classList.contains('accordion-item-header-expanded')) {
-      this.section2Height = 45;
-    } else if (headerElement.classList.contains('accordion-item-header-collapsed')) {
-      this.section2Height = (window.innerHeight - 64) / 3;
+  onSectionHeaderClick(event: MouseEvent, sectionNumber: number): void {
+    // Toggle the expanded state
+    switch (sectionNumber) {
+      case 1:
+        this.section1Expanded = !this.section1Expanded;
+        break;
+      case 2:
+        this.section2Expanded = !this.section2Expanded;
+        break;
+      case 3:
+        this.section3Expanded = !this.section3Expanded;
+        break;
+      default:
+        console.error('Invalid section number');
+        return;
     }
+
+    // Recalculate heights after state change
+    this.redistributeSpace();
   }
 
-  onSection3HeaderClick(event: MouseEvent): void {
-    const headerElement = event.currentTarget as HTMLElement;
-    if (headerElement.classList.contains('accordion-item-header-expanded')) {
-      this.section3Height = 45;
-    } else if (headerElement.classList.contains('accordion-item-header-collapsed')) {
-      this.section3Height = (window.innerHeight - 64) / 3;
+  // Calculate and redistribute space among accordions
+  private redistributeSpace(): void {
+    const totalAvailableHeight = window.innerHeight - 64; // Subtract header height
+    const numberOfExpandedSections =
+      (this.section1Expanded ? 1 : 0) +
+      (this.section2Expanded ? 1 : 0) +
+      (this.section3Expanded ? 1 : 0);
+
+    if (numberOfExpandedSections === 0) {
+      // All sections collapsed - give them all header height
+      this.section1Height = this.COLLAPSED_HEADER_HEIGHT;
+      this.section2Height = this.COLLAPSED_HEADER_HEIGHT;
+      this.section3Height = this.COLLAPSED_HEADER_HEIGHT;
+      return;
     }
+
+    // Calculate space for collapsed sections
+    const collapsedSpace =
+      (!this.section1Expanded ? this.COLLAPSED_HEADER_HEIGHT : 0) +
+      (!this.section2Expanded ? this.COLLAPSED_HEADER_HEIGHT : 0) +
+      (!this.section3Expanded ? this.COLLAPSED_HEADER_HEIGHT : 0);
+
+    // Remaining space to distribute among expanded sections
+    const remainingSpace = totalAvailableHeight - collapsedSpace;
+    const spacePerExpandedSection = remainingSpace / numberOfExpandedSections;
+
+    // Assign heights
+    this.section1Height = this.section1Expanded ? spacePerExpandedSection : this.COLLAPSED_HEADER_HEIGHT;
+    this.section2Height = this.section2Expanded ? spacePerExpandedSection : this.COLLAPSED_HEADER_HEIGHT;
+    this.section3Height = this.section3Expanded ? spacePerExpandedSection : this.COLLAPSED_HEADER_HEIGHT;
   }
 
   @ViewChild(NbPopoverDirective) popover: NbPopoverDirective;
@@ -261,7 +306,7 @@ export class CoreComponent implements OnInit, OnDestroy {
     }
     if (!this.query[i][j][k]) {
       if (call === 'info') {
-      this.query[i][j][k] = '';
+        this.query[i][j][k] = '';
       } else {
         this.query[i][j][k] = '';
       }
@@ -329,13 +374,14 @@ export class CoreComponent implements OnInit, OnDestroy {
     this.displayMode = mode;
     const element = document.querySelector('.responses nb-card-body') as HTMLElement;
 
-    if (mode === 'default') {
-      this.renderer.setStyle(element, 'display', 'block');
-    } else if (mode === 'line') {
-      this.renderer.setStyle(element, 'display', 'ruby');
-    } else if (mode === 'columns') {
-      this.renderer.setStyle(element, 'display', '-webkit-box');
-    }
+    const displayStyles: { [key: string]: string } = {
+      default: 'block',
+      line: 'ruby',
+      columns: '-webkit-box',
+    };
+
+    const displayStyle = displayStyles[mode] || 'block'; // Default to 'block' if mode not found
+    this.renderer.setStyle(element, 'display', displayStyle);
   }
 
 }

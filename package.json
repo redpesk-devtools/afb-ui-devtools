@@ -18,6 +18,7 @@
     "set_version": "[ -z \"$VERSION\" ] && export VERSION=$(cat package.json | jq -r .version); sed -i -e \"s/GIT_TAG: .*$/GIT_TAG: '$VERSION'/g\" src/environments/environment.prod.ts",
     "build:prod": "npm run set_version && ng build --configuration production --aot",
     "build:dev": "npm run set_version && ng build",
+    "build:tar": "node set-git-tag.js && PREFIX='afb-ui-devtools-prebuild-' VERSION=$(git describe --tags --abbrev=0) && ng build --configuration production --aot && mkdir -p $PREFIX$VERSION && mv dist/* $PREFIX$VERSION/ && tar -czf $PREFIX$VERSION.tar.gz $PREFIX$VERSION && rm -rf $PREFIX$VERSION",
     "test": "ng test",
     "test:coverage": "rimraf coverage && npm run test -- --code-coverage",
     "lint": "ng lint",
