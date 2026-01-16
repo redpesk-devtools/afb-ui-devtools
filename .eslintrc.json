@@ -40,13 +40,8 @@
                     }
                 ],
                 "quotes": "off",
-                "@typescript-eslint/quotes": [
-                    "error",
-                    "single",
-                    {
-                        "allowTemplateLiterals": true
-                    }
-                ],
+                "@angular-eslint/prefer-standalone": "off",
+                "@angular-eslint/no-output-native": "off",
                 "no-console": [
                     "error",
                     {

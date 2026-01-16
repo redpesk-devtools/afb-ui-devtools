@@ -85,6 +85,10 @@
     "npm-run-all": "4.0.2",
     "protractor": "~7.0.0",
     "rimraf": "2.6.1",
+    "stylelint": "^16.2.0",
+    "stylelint-config-standard": "^36.0.0",
+    "stylelint-config-standard-scss": "^13.0.0",
+    "stylelint-scss": "^6.1.0",
     "ts-node": "3.2.2",
     "typescript": "^5.8.3"
   }
