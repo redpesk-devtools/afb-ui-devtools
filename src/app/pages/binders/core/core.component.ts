@@ -33,10 +33,11 @@ import { map } from 'rxjs/operators';
 
 
 @Component({
-  selector: 'rp-core',
-  templateUrl: './core.component.html',
-  styleUrls: ['./core.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'rp-core',
+    templateUrl: './core.component.html',
+    styleUrls: ['./core.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 
 export class CoreComponent implements OnInit, OnDestroy {

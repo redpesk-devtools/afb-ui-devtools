@@ -3,6 +3,7 @@
   "compilerOptions": {
     "importHelpers": true,
     "module": "es2020",
+    "esModuleInterop": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": false,
     "declaration": false,
@@ -24,6 +25,7 @@
         "name": "tslint-language-service"
       }
     ],
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "skipLibCheck": true
   }
 }

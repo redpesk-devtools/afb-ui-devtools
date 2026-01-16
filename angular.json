@@ -18,15 +18,18 @@
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             "aot": true,
             "preserveSymlinks": true,
-            "outputPath": "dist",
+            "outputPath": {
+              "base": "dist"
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": [
+              "src/polyfills.ts"
+            ],
             "assets": [
               "src/assets",
               "src/favicon.ico",
@@ -40,7 +43,8 @@
             ],
             "scripts": [
               "node_modules/pace-js/pace.min.js"
-            ]
+            ],
+            "browser": "src/main.ts"
           },
           "configurations": {
             "production": {
@@ -56,8 +60,6 @@
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -66,30 +68,33 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "afb-ui-devtools:build"
+            "buildTarget": "afb-ui-devtools:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "afb-ui-devtools:build:production"
+              "buildTarget": "afb-ui-devtools:build:production"
+            },
+            "development": {
+              "buildTarget": "afb-ui-devtools:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "afb-ui-devtools:build"
+            "buildTarget": "afb-ui-devtools:build"
           }
         },
         "test": {
@@ -116,13 +121,13 @@
           }
         },
         "lint": {
-            "builder": "@angular-eslint/builder:lint",
-            "options": {
-              "lintFilePatterns": [
-                  "src/**/*.ts",
-                  "src/**/*.html"
-              ]
-            }
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     },
@@ -141,11 +146,11 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-              "lintFilePatterns": [
-                  "src/**/*.ts",
-                  "src/**/*.html"
-              ]
-            }
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }

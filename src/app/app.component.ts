@@ -32,6 +32,7 @@ import { AFBWebSocketService } from './@core/services/AFB-websocket.service';
 @Component({
     selector: 'afb-ui-devtool-app',
     template: '<router-outlet></router-outlet>',
+    standalone: false
 })
 export class AppComponent implements OnInit, OnDestroy {
 
