@@ -34,22 +34,20 @@ import { NbCardModule, NbButtonModule, NbAccordionModule, NbInputModule, NbIconM
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
-  imports: [
-    NbCardModule,
-    ThemeModule,
-    NbButtonModule,
-    NbAccordionModule,
-    NbIconModule,
-    NbInputModule,
-    NbToastrModule,
-    NbToggleModule,
-    NbPopoverModule,
-    FormsModule,
-    NbTooltipModule,
-    NbSelectModule,
-  ],
-  declarations: [
-    CoreComponent,
-  ]
+    imports: [
+        NbCardModule,
+        ThemeModule,
+        NbButtonModule,
+        NbAccordionModule,
+        NbIconModule,
+        NbInputModule,
+        NbToastrModule,
+        NbToggleModule,
+        NbPopoverModule,
+        FormsModule,
+        NbTooltipModule,
+        NbSelectModule,
+        CoreComponent,
+    ]
 })
 export class BindersModule { }

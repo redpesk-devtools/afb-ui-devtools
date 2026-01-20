@@ -1,16 +1,17 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
+import { NbMenuService, NbSidebarService, NbThemeService, NbButtonModule } from '@nebular/theme';
 import { environment } from '../../../../environments/environment.prod';
 
 import { map, takeUntil } from 'rxjs/operators';
 import { Subject, Observable } from 'rxjs';
 import { AFBWebSocketService, SocketStatus } from '../../../@core/services/AFB-websocket.service';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'ngx-header',
     styleUrls: ['./header.component.scss'],
     templateUrl: './header.component.html',
-    standalone: false
+    imports: [NbButtonModule, AsyncPipe]
 })
 
 export class HeaderComponent implements OnInit, OnDestroy {

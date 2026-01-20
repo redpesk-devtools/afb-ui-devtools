@@ -27,6 +27,9 @@
 import { Component } from '@angular/core';
 
 import { MENU_ITEMS } from './pages-menu';
+import { OneColumnLayoutComponent } from '../@theme/layouts/one-column/one-column.layout';
+import { NbMenuModule } from '@nebular/theme';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
     selector: 'ngx-pages',
@@ -38,7 +41,7 @@ import { MENU_ITEMS } from './pages-menu';
         <router-outlet></router-outlet>
       </ngx-one-column-layout>
   `,
-    standalone: false
+    imports: [OneColumnLayoutComponent, NbMenuModule, RouterOutlet]
 })
 export class PagesComponent {
   menu = MENU_ITEMS;

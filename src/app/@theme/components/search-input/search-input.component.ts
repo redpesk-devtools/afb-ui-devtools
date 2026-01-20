@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, output, viewChild } from '@angular/core';
 
 @Component({
     selector: 'ngx-search-input',
@@ -11,19 +11,18 @@ import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular
            [class.hidden]="!isInputShown"
            (blur)="hideInput()"
            (input)="onInput($event)">
-  `,
-    standalone: false
+  `
 })
 export class SearchInputComponent {
-  @ViewChild('input', { static: true }) input: ElementRef;
+  readonly input = viewChild<ElementRef>('input');
 
-  @Output() search: EventEmitter<string> = new EventEmitter<string>();
+  readonly search = output<string>();
 
   isInputShown = false;
 
   showInput() {
     this.isInputShown = true;
-    this.input.nativeElement.focus();
+    this.input().nativeElement.focus();
   }
 
   hideInput() {

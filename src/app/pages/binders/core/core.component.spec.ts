@@ -34,8 +34,8 @@ describe('CoreComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CoreComponent ],
-    })
+    imports: [CoreComponent],
+})
     .compileComponents();
   }));
 

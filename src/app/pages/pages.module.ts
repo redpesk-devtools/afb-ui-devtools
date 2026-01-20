@@ -32,16 +32,14 @@ import { PagesRoutingModule } from './pages-routing.module';
 import { BindersModule  } from './binders/binders.module';
 
 @NgModule({
-  imports: [
-    PagesRoutingModule,
-    ThemeModule,
-    NbMenuModule,
-    NbLayoutModule,
-    BindersModule,
-  ],
-  declarations: [
-    PagesComponent,
-  ],
+    imports: [
+        PagesRoutingModule,
+        ThemeModule,
+        NbMenuModule,
+        NbLayoutModule,
+        BindersModule,
+        PagesComponent,
+    ],
 })
 export class PagesModule {
 }

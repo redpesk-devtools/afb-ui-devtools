@@ -1,12 +1,12 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, input, output } from '@angular/core';
 
 @Component({
     selector: 'ngx-switcher',
     styleUrls: ['./switcher.component.scss'],
     template: `
-    <label class="switch-label" [class.vertical]="vertical">
-      <span class="first" [class.active]="vertical || isFirstValue()">
-        {{vertical ? currentValueLabel() : firstValueLabel}}
+    <label class="switch-label" [class.vertical]="vertical()">
+      <span class="first" [class.active]="vertical() || isFirstValue()">
+        {{vertical() ? currentValueLabel() : firstValueLabel()}}
       </span>
     
       <div class="switch">
@@ -14,47 +14,46 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
         <span class="slider"></span>
       </div>
     
-      @if (!vertical) {
+      @if (!vertical()) {
         <span
           class="second"
           [class.active]="isSecondValue()">
-          {{secondValueLabel}}
+          {{secondValueLabel()}}
         </span>
       }
     </label>
-    `,
-    standalone: false
+    `
 })
 export class SwitcherComponent {
-  @Input() firstValue: any;
-  @Input() secondValue: any;
+  readonly firstValue = input<any>(undefined);
+  readonly secondValue = input<any>(undefined);
 
-  @Input() firstValueLabel: string;
-  @Input() secondValueLabel: string;
+  readonly firstValueLabel = input<string>(undefined);
+  readonly secondValueLabel = input<string>(undefined);
 
-  @Input() vertical: boolean;
+  readonly vertical = input<boolean>(undefined);
 
   @Input() value: any;
-  @Output() valueChange = new EventEmitter<any>();
+  readonly valueChange = output<any>();
 
   isFirstValue() {
-    return this.value === this.firstValue;
+    return this.value === this.firstValue();
   }
 
   isSecondValue() {
-    return this.value === this.secondValue;
+    return this.value === this.secondValue();
   }
 
   currentValueLabel() {
     return this.isFirstValue()
-      ? this.firstValueLabel
-      : this.secondValueLabel;
+      ? this.firstValueLabel()
+      : this.secondValueLabel();
   }
 
   changeValue() {
     this.value = this.isFirstValue()
-      ? this.secondValue
-      : this.firstValue;
+      ? this.secondValue()
+      : this.firstValue();
 
     this.valueChange.emit(this.value);
   }

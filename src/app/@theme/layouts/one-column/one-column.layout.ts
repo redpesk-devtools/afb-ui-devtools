@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { NbLayoutModule } from '@nebular/theme';
+import { HeaderComponent } from '../../components/header/header.component';
 
 @Component({
     selector: 'ngx-one-column-layout',
@@ -13,7 +15,7 @@ import { Component } from '@angular/core';
       </nb-layout-column>
     </nb-layout>
   `,
-    standalone: false
+    imports: [NbLayoutModule, HeaderComponent]
 })
 export class OneColumnLayoutComponent {
 

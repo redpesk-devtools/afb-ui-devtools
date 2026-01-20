@@ -24,12 +24,14 @@
  * $RP_END_LICENSE$
  */
 
-import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, Renderer2, ViewChild, HostListener, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, Renderer2, HostListener, inject, viewChild } from '@angular/core';
 // import { DOCUMENT } from '@angular/common';
 import { Subscription, Observable, BehaviorSubject, Subject } from 'rxjs';
 import { AFBWebSocketService, SocketStatus, AFBApi } from '../../../@core/services/AFB-websocket.service';
-import { NbPopoverDirective, NbToastrService } from '@nebular/theme';
+import { NbPopoverDirective, NbToastrService, NbCardModule, NbToggleModule, NbAccordionModule, NbButtonModule, NbInputModule, NbTooltipModule, NbIconModule, NbPopoverModule } from '@nebular/theme';
 import { map } from 'rxjs/operators';
+import { NgStyle, NgClass, AsyncPipe, UpperCasePipe, JsonPipe, KeyValuePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
@@ -37,7 +39,7 @@ import { map } from 'rxjs/operators';
     templateUrl: './core.component.html',
     styleUrls: ['./core.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+    imports: [NgStyle, NbCardModule, NbToggleModule, NbAccordionModule, NbButtonModule, NbInputModule, FormsModule, NgClass, NbTooltipModule, NbIconModule, NbPopoverModule, AsyncPipe, UpperCasePipe, JsonPipe, KeyValuePipe]
 })
 
 export class CoreComponent implements OnInit, OnDestroy {
@@ -240,7 +242,7 @@ export class CoreComponent implements OnInit, OnDestroy {
     this.section3Height = this.section3Expanded ? spacePerExpandedSection : this.COLLAPSED_HEADER_HEIGHT;
   }
 
-  @ViewChild(NbPopoverDirective) popover: NbPopoverDirective;
+  readonly popover = viewChild(NbPopoverDirective);
 
   ngOnInit(): void {
     this.wsStatus$ = this.afbService.Status$;
@@ -365,7 +367,7 @@ export class CoreComponent implements OnInit, OnDestroy {
 
   popOverToggle($event) {
     $event.stopPropagation();
-    this.popover.toggle();
+    this.popover().toggle();
   }
 
   chooseDisplayMode(mode: string) {

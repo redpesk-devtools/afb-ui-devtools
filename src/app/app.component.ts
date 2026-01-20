@@ -28,11 +28,12 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { NbIconLibraries } from '@nebular/theme';
 import { environment } from '../environments/environment';
 import { AFBWebSocketService } from './@core/services/AFB-websocket.service';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
     selector: 'afb-ui-devtool-app',
     template: '<router-outlet></router-outlet>',
-    standalone: false
+    imports: [RouterOutlet]
 })
 export class AppComponent implements OnInit, OnDestroy {
     private iconLibraries = inject(NbIconLibraries);
