@@ -24,7 +24,7 @@
  * $RP_END_LICENSE$
  */
 
-import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, Renderer2, ViewChild, HostListener } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy, Renderer2, ViewChild, HostListener, inject } from '@angular/core';
 // import { DOCUMENT } from '@angular/common';
 import { Subscription, Observable, BehaviorSubject, Subject } from 'rxjs';
 import { AFBWebSocketService, SocketStatus, AFBApi } from '../../../@core/services/AFB-websocket.service';
@@ -41,6 +41,10 @@ import { map } from 'rxjs/operators';
 })
 
 export class CoreComponent implements OnInit, OnDestroy {
+  private afbService = inject(AFBWebSocketService);
+  private renderer = inject(Renderer2);
+  private toastrService = inject(NbToastrService);
+
 
   dataFromServer: string;
   wsSubscription: Subscription;
@@ -237,13 +241,6 @@ export class CoreComponent implements OnInit, OnDestroy {
   }
 
   @ViewChild(NbPopoverDirective) popover: NbPopoverDirective;
-
-  constructor(
-    // @Inject(DOCUMENT) private document: Document,
-    private afbService: AFBWebSocketService,
-    private renderer: Renderer2,
-    private toastrService: NbToastrService) {
-  }
 
   ngOnInit(): void {
     this.wsStatus$ = this.afbService.Status$;

@@ -116,7 +116,9 @@ nb-accordion-item-header {
 .scrollheight {
   overflow-x: hidden;
   overflow-y: auto;
-  height: calc(100vh - 60px); // Adjust based on header/navbar height
+  flex: 1;
+  height: auto;
+  min-height: 0;
   // padding-right: 1rem;
   padding: 0px;
 }
@@ -232,23 +234,25 @@ span {
 }
 
 .container-fluid {
-  height: 100vh;
-  /* Full viewport height */
+  height: calc(100vh - 4rem);
+  /* Full viewport height minus header */
 }
 
 .sidebar {
-  height: 100vh;
+  height: calc(100vh - 4rem);
+  display: flex;
+  flex-direction: column;
 }
 
 .resizer {
   width: 2px;
   cursor: ew-resize;
   background-color: #d9d9d9a6;
-  height: 100vh;
+  height: calc(100vh - 4rem);
 }
 
 .content {
-  height: 100vh;
+  height: calc(100vh - 4rem);
   overflow: auto;
   background-color: #fff;
 }

@@ -1,29 +1,30 @@
 <div class="header-container">
   <div class="logo-container" style="display: block;">
     <!-- <a (click)="toggleSidebar()" href="#" class="sidebar-toggle">
-      <nb-icon icon="menu-2-outline"></nb-icon>
-    </a> -->
-    <a class="logo" href="#" (click)="navigateHome()"> <span>Binder Devtool</span> </a>
-    <div style="font-size: 12px; padding: 0 1rem;"><em style="color: var(--button-ghost-basic-text-color); font-weight: 500;">version {{gitTag}}</em></div>
-  </div>
-  <div class="header-container">
-    <div *ngIf="(wsStatus$|async).connected; else disconnected">
+    <nb-icon icon="menu-2-outline"></nb-icon>
+  </a> -->
+  <a class="logo" href="#" (click)="navigateHome()"> <span>Binder Devtool</span> </a>
+  <div style="font-size: 12px; padding: 0 1rem;"><em style="color: var(--button-ghost-basic-text-color); font-weight: 500;">version {{gitTag}}</em></div>
+</div>
+<div class="header-container">
+  @if ((wsStatus$|async).connected) {
+    <div>
       <button ghost nbButton shape="round" size="small" status="success">Binder WS Active</button>
       <button nbButton shape="round" size="small" status="success" (click)="Disconnect()">Disconnect</button>
     </div>
-    
-    <ng-template #disconnected>
-      <button ghost nbButton shape="round" size="small" status="danger">Binder WS Fail</button>
-      <button nbButton shape="round" size="small" status="danger" (click)="Connect()">Connect</button>
-    </ng-template>
-    <button nbButton ghost shape="round" size="small" (click)="OpenMonitoring()" id="monitoring">Debug/Monitoring</button>
-    <a nbButton ghost href="https://docs.redpesk.bzh/" target="_blank" shape="round" size="small">Documentation</a>
-  </div>
-  
-  <!-- <nb-select [selected]="currentTheme" (selectedChange)="changeTheme($event)" status="primary">
-    <nb-option *ngFor="let theme of themes" [value]="theme.value"> {{ theme.name }}</nb-option>
-  </nb-select> -->
-  <!-- <ngx-layout-direction-switcher class="direction-switcher"></ngx-layout-direction-switcher> -->
+  } @else {
+    <button ghost nbButton shape="round" size="small" status="danger">Binder WS Fail</button>
+    <button nbButton shape="round" size="small" status="danger" (click)="Connect()">Connect</button>
+  }
+
+  <button nbButton ghost shape="round" size="small" (click)="OpenMonitoring()" id="monitoring">Debug/Monitoring</button>
+  <a nbButton ghost href="https://docs.redpesk.bzh/" target="_blank" shape="round" size="small">Documentation</a>
+</div>
+
+<!-- <nb-select [selected]="currentTheme" (selectedChange)="changeTheme($event)" status="primary">
+<nb-option *ngFor="let theme of themes" [value]="theme.value"> {{ theme.name }}</nb-option>
+</nb-select> -->
+<!-- <ngx-layout-direction-switcher class="direction-switcher"></ngx-layout-direction-switcher> -->
 
 </div>
 <div class="rp-image">
@@ -31,12 +32,12 @@
 </div>
 
 <!-- <div class="header-container">
-  <nb-actions size="small">
+<nb-actions size="small">
 
-    <nb-action class="control-item">
-      <nb-search type="rotate-layout"></nb-search>
-    </nb-action>
-    <nb-action class="control-item" icon="email-outline"></nb-action>
-    <nb-action class="control-item" icon="bell-outline"></nb-action>
-  </nb-actions>
+  <nb-action class="control-item">
+    <nb-search type="rotate-layout"></nb-search>
+  </nb-action>
+  <nb-action class="control-item" icon="email-outline"></nb-action>
+  <nb-action class="control-item" icon="bell-outline"></nb-action>
+</nb-actions>
 </div> -->

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { NbMenuService, NbSidebarService, NbThemeService } from '@nebular/theme';
 import { environment } from '../../../../environments/environment.prod';
 
@@ -14,6 +14,11 @@ import { AFBWebSocketService, SocketStatus } from '../../../@core/services/AFB-w
 })
 
 export class HeaderComponent implements OnInit, OnDestroy {
+  private sidebarService = inject(NbSidebarService);
+  private menuService = inject(NbMenuService);
+  private themeService = inject(NbThemeService);
+  private afbService = inject(AFBWebSocketService);
+
   gitTag: string = environment.GIT_TAG;
 
   private destroy$: Subject<void> = new Subject<void>();
@@ -43,12 +48,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   userMenu = [ { title: 'Profile' }, { title: 'Log out' } ];
   wsStatus$: Observable<SocketStatus>;
-
-  constructor(private sidebarService: NbSidebarService,
-              private menuService: NbMenuService,
-              private themeService: NbThemeService,
-              private afbService: AFBWebSocketService) {
-  }
 
   ngOnInit() {
     this.currentTheme = this.themeService.currentTheme;

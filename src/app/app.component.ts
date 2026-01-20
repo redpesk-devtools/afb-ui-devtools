@@ -24,7 +24,7 @@
  * $RP_END_LICENSE$
  */
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { NbIconLibraries } from '@nebular/theme';
 import { environment } from '../environments/environment';
 import { AFBWebSocketService } from './@core/services/AFB-websocket.service';
@@ -35,11 +35,13 @@ import { AFBWebSocketService } from './@core/services/AFB-websocket.service';
     standalone: false
 })
 export class AppComponent implements OnInit, OnDestroy {
+    private iconLibraries = inject(NbIconLibraries);
+    private afbService = inject(AFBWebSocketService);
 
-    constructor(
-        private iconLibraries: NbIconLibraries,
-        private afbService: AFBWebSocketService,
-    ) {
+
+    constructor() {
+        const afbService = this.afbService;
+
         this.iconLibraries.registerFontPack('font-awesome', { iconClassPrefix: 'fa' });
         this.iconLibraries.setDefaultPack('font-awesome');
         afbService.Init('api', 'HELLO');

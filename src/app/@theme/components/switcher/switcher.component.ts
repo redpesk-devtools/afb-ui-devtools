@@ -8,19 +8,21 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
       <span class="first" [class.active]="vertical || isFirstValue()">
         {{vertical ? currentValueLabel() : firstValueLabel}}
       </span>
-
+    
       <div class="switch">
         <input type="checkbox" [checked]="isSecondValue()" (change)="changeValue()">
         <span class="slider"></span>
       </div>
-
-      <span *ngIf="!vertical"
-            class="second"
-            [class.active]="isSecondValue()">
+    
+      @if (!vertical) {
+        <span
+          class="second"
+          [class.active]="isSecondValue()">
           {{secondValueLabel}}
-      </span>
+        </span>
+      }
     </label>
-  `,
+    `,
     standalone: false
 })
 export class SwitcherComponent {
