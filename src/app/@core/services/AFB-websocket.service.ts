@@ -297,6 +297,15 @@ export class AFBWebSocketService {
     }
 
     private _getStdInfo(api: string, data: any) {
-        return data;
+        switch (data.$schema) {
+        case 'afb-api-info/v2':
+            return this._infoV2toStdInfo(api, data);
+        default:
+            return data;
+        }
+    }
+
+    private _infoV2toStdInfo(api: string, data: any) {
+        return undefined;
     }
 }
