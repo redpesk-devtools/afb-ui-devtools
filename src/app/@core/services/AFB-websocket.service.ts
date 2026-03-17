@@ -306,6 +306,24 @@ export class AFBWebSocketService {
     }
 
     private _infoV2toStdInfo(api: string, data: any) {
-        return undefined;
+        var result : any = { metadata: { uid: api } };
+        var groups = data.groups || {};
+        if (data.info) result.metadata.info = data.info;
+        if (data.version) result.metadata.version = data.version;
+        data.verbs.forEach(verb => {
+            var desc : any = { uid: verb.name, verb: verb.name };
+            if (verb.info) desc.info = verb.info;
+            if (verb.samples) desc.sample = verb.samples;
+            if (verb.description) desc.usage = verb.description;
+            var t = verb.groups || "default";
+            if (!(t instanceof Array)) t = [ t ];
+            t.forEach(gname => {
+                if (!groups[gname]) groups[gname] = { uid: gname };
+                if (!groups[gname].verbs) groups[gname].verbs = [];
+                groups[gname].verbs.push(desc);
+            });
+        });
+        result.groups = Object.entries(groups).map(x => x[1]);
+        return result;
     }
 }
