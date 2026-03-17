@@ -221,7 +221,8 @@ export class AFBWebSocketService {
                     tasks$.push(this.Send(api + '/info', {}).pipe(
                         map(d => {
                             if (d.response) {
-                                return { 'api': api, 'info': d.response };
+                                let info = this._getStdInfo(api, d.response);
+                                return { 'api': api, 'info': info };
                             } else {
                                 return undefined;
                             }
@@ -293,5 +294,9 @@ export class AFBWebSocketService {
             AFBVerbs.push(verb);
         });
         return AFBVerbs;
+    }
+
+    private _getStdInfo(api: string, data: any) {
+        return data;
     }
 }
