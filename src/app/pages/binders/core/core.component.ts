@@ -256,7 +256,8 @@ export class CoreComponent implements OnInit, OnDestroy {
     this.count = 0;
     this.evtidx = 0;
     this.event$ = this._eventSubject.asObservable();
-    this.initEvents$ = this.afbService.OnEvent('*').pipe(map(d => {
+    this.initEvents$ = this.afbService.OnEvent('*').pipe(map(e => {
+	  let d = { event: e[0], values: e[1] };
       this._eventArray.unshift(this.evtidx + ' : ' + this.afbService.syntaxHighlight(d));
       this.evtidx++;
       this._eventSubject.next(this._eventArray);
@@ -283,11 +284,12 @@ export class CoreComponent implements OnInit, OnDestroy {
       if (query && query.trim().length > 0) {
         req += '?query=' + query;
       }
-      this.afbService.Send(api + '/' + verb, query).subscribe(d => {
+      this.afbService.Send(api, verb, query).subscribe(e => {
+        let [ rc, values ] = e;
         this.questions.unshift(this.afbService.syntaxHighlight(req));
         this._questionsSubject.next(this.questions);
-        const outcome = (d.request.status === 'success') ? ': OK :' : ': ERROR :';
-        const res = [this.count + outcome + this.afbService.syntaxHighlight(d)];
+        const outcome = ': ' + (rc >= 0 ? ': OK' : ': ERROR') + '=' + rc.toString() + ' :';
+        const res = [this.count + outcome + this.afbService.syntaxHighlight(values[0])];
         this.responses.unshift(res);
         this._responsesSubject.next(this.responses);
         this.count++;

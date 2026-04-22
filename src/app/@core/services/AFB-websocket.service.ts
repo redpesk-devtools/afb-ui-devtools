@@ -26,7 +26,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject, BehaviorSubject, from, ReplaySubject, forkJoin } from 'rxjs';
 import { filter, switchMap, map, take } from 'rxjs/operators';
-import { AFB, AFBEvent, AFBReply } from '@redpesk/afb-ws';
+import { afbWsConnect, AfbWs } from '@redpesk/afb-ws-js';
 
 export interface SocketStatus {
     connected: boolean;
@@ -53,7 +53,9 @@ export interface AFBVerb {
 @Injectable()
 export class AFBWebSocketService {
 
-    conn_location?: string;
+    conn_path?: string;
+    conn_token?: string;
+    conn_hostname?: string;
     conn_port?: string;
     wsConnect$?: Observable<Event>;
     wsDisconnect$?: Observable<Event>;
@@ -70,14 +72,15 @@ export class AFBWebSocketService {
     private _status = <SocketStatus>{ connected: false };
     private _statusSubject = <BehaviorSubject<SocketStatus>>new BehaviorSubject(this._status);
     private _isInitDone = <ReplaySubject<boolean>>new ReplaySubject(1);
-    private afb: any;
 
     constructor() {
     }
 
 
-    Init(base: string, initialToken?: string) {
-        this.afb = new AFB(base, initialToken);
+    Init(path: string, initialToken?: string) {
+        this.conn_path = path;
+        this.conn_token = initialToken;
+
         this.wsConnect$ = this._wsConnectSubject.asObservable();
         this.wsDisconnect$ = this._wsDisconnectSubject.asObservable();
         this.wsEvent$ = this._wsEventSubject.asObservable();
@@ -85,65 +88,62 @@ export class AFBWebSocketService {
         this.InitDone$ = this._isInitDone.asObservable();
     }
 
-    SetURL(location: string, port?: string) {
-        this.conn_location = location;
+    SetURL(hostname: string, port?: string) {
+        this.conn_hostname = hostname;
         this.conn_port = port;
-        this.afb.setURL(location, port);
     }
 
     GetUrl(): string {
-        return this.conn_location + (this.conn_port ? ':' + this.conn_port : '');
+        return this.conn_hostname + (this.conn_port ? ':' + this.conn_port : '');
     }
 
-    Connect(): Error {
-
-        // Establish websocket connection
-        this.ws = new this.afb.ws(
-            //  onopen
-            (event: Event) => {
-                this._NotifyServerState(true);
-                this._wsConnectSubject.next(event);
-                this._isInitDone.next(true);
-            },
-            // onerror
-            () => {
-                this._isInitDone.next(false);
-                console.error('Can not open websocket');
-            }
-        );
-
-        this.ws.onclose = (event: CloseEvent) => {
-            this._isInitDone.next(false);
-            this._NotifyServerState(false);
-            this._wsDisconnectSubject.next(event);
-        };
-        return new Error('Websocket connection failed');
+    Connect() {
+        this.Disconnect();
+        afbWsConnect({
+                hostname: this.conn_hostname,
+                port: this.conn_port,
+                path: this.conn_path,
+                token: this.conn_token,
+                onabort: this._onabort.bind(this),
+                onopen: this._onopen.bind(this)
+        });
     }
 
+    private _onabort(reason: string, url: string) {
+        this._isInitDone.next(false);
+        console.error('Can not open websocket to '+url+(reason ? " because "+reason : ""));
+    }
+
+    private _onopen(afbws: AfbWs) {
+        (this.ws = afbws).onclose = this.Disconnect.bind(this);
+        this._NotifyServerState(true);
+        this._wsConnectSubject.next(new Event("connected"));
+        this._isInitDone.next(true);
+    }
 
     Disconnect() {
-        // TODO : close all subjects
-        this._NotifyServerState(false);
-        this.ws.close();
+        if (this.ws) {
+            this.ws.close();
+            delete this.ws;
+            this._wsDisconnectSubject.next(new Event("disconnected"));
+            this._NotifyServerState(false);
+        }
     }
 
     /**
      * Send data to the ws server
      */
-    Send(method: string, params: object | string): Observable<any> {
+    Send(api: string, verb: string, params: object | string): Observable<[number,any[]]> {
         const param = this.CheckQuery(params);
         return this._isInitDone.pipe(
             filter(done => done),
             switchMap(() => {
-                return from(this.ws.call(method, param)
-                    .then((obj: AFBReply) => {
+                return <Observable<[number,any[]]>>from(this.ws.callPromise(api, verb, [param])
+                    .then((obj: [number, Array<any>]) => {
                         return obj;
-                    },
-                    ).catch((err: AFBReply) => {
-                        return (err);
-                    },
-                    )
-                );
+                    }).catch((err: [number, Array<any>]) => {
+                        return err;
+                    }));
             }),
             take(1),
         );
@@ -168,7 +168,9 @@ export class AFBWebSocketService {
     }
 
     syntaxHighlight(json: any) {
-        if (typeof json !== 'string') {
+        if (json === undefined)
+            return json = '';
+    else if (typeof json !== 'string') {
             json = JSON.stringify(json, undefined, 2);
         }
         json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -193,12 +195,12 @@ export class AFBWebSocketService {
     /**
      * Receive data from opened websocket
      */
-    OnEvent(eventName: string): Observable<AFBEvent> {
+    OnEvent(eventName: string): Observable<[string,Array<any>]> {
         // Convert websocket Event based on callback to an Observable
         return Observable.create(
-            (            observer: { next: (arg0: AFBEvent) => void; }) => {
-                this.ws.onevent(eventName, (event: AFBEvent) => {
-                    observer.next(event);
+            (            observer: { next: (arg0: [string, Array<any>]) => void; }) => {
+                this.ws.addEvent(eventName, (values: Array<any>, name: string) => {
+                    observer.next([name, values]);
                 });
             },
         );
@@ -218,10 +220,11 @@ export class AFBWebSocketService {
             map((data) => {
                 const tasks$: Observable<{ api: string; info: any; } | undefined>[] = [];
                 data.forEach(api => {
-                    tasks$.push(this.Send(api + '/info', {}).pipe(
-                        map(d => {
-                            if (d.response) {
-                                let info = this._getStdInfo(api, d.response);
+                    tasks$.push(this.Send(api, 'info', {}).pipe(
+                        map(e => {
+							let [ rc, values ] = e;
+                            if (rc >= 0 && values && values[0]) {
+                                let info = this._getStdInfo(api, values[0]);
                                 return { 'api': api, 'info': info };
                             } else {
                                 return undefined;
@@ -238,11 +241,12 @@ export class AFBWebSocketService {
     }
 
     getApis(): Observable<Array<string>> {
-        return this.Send('monitor/get', { 'apis': false }).pipe(
+        return this.Send('monitor', 'get', { 'apis': false }).pipe(
             map(data => {
+                let values = data[1];
                 const apis: Array<string> = [];
-                const keys = Object.keys(data.response.apis);
-                const results = keys.map(key => ({ key: key, value: data.response.apis[key] }));
+                const keys = Object.keys(values[0].apis);
+                const results = keys.map(key => ({ key: key, value: values[0].apis[key] }));
                 results.forEach(value => {
                     if (value.key !== 'monitor') {
                         apis.push(value.key);
@@ -254,9 +258,9 @@ export class AFBWebSocketService {
     }
 
     Discover(): Observable<AFBApis> {
-        return this.Send('monitor/get', { 'apis': true }).pipe(
+        return this.Send('monitor', 'get', { 'apis': true }).pipe(
             map(data => {
-                return this._GetAFBApis(data.response);
+                return this._GetAFBApis(data[1][0]);
             })
         );
     }
