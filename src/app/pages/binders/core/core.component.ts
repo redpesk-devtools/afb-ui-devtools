@@ -320,7 +320,8 @@ export class CoreComponent implements OnInit, OnDestroy {
   }
 
   getUsage(verb: any, usage: any): string {
-    let data: string = !verb ? JSON.stringify(usage) : (!verb.data ? JSON.stringify(usage) : JSON.stringify(verb.data));
+    const replacer = (key, value) => typeof value === 'bigint' ? value.toString() : value;
+    let data: string = !verb ? JSON.stringify(usage, replacer) : (!verb.data ? JSON.stringify(usage, replacer) : JSON.stringify(verb.data, replacer));
     if (data === '{}') {
       data = 'use your query with {} or [] or "" or number';
     }
@@ -328,7 +329,8 @@ export class CoreComponent implements OnInit, OnDestroy {
   }
 
   getExample(verb: any): string {
-    const example: string = JSON.stringify(verb);
+    const replacer = (key, value) => typeof value === 'bigint' ? value.toString() : value;
+    const example: string = JSON.stringify(verb, replacer);
     return example;
   }
 
