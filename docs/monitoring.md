@@ -6,28 +6,12 @@ The Binder devtool provides a graphical environment automatically populated to t
 
 ## Native installation
 
-First setup your host, declare redpesk native packages repository [refer to the add repository section]({% chapter_link host-configuration-doc.setup-your-build-host %})
+Deploy a `SDK` container: [Overview]({% chapter_link sdk-container-doc.overview %})
 
 Then install the afb-ui-devtools package.
 
-### for Fedora
-```
+```bash
 sudo dnf install afb-ui-devtools
-```
-
-### for Debian
-```
-sudo apt-get install afb-ui-devtools
-```
-
-### for Ubuntu
-```
-sudo apt install afb-ui-devtools
-```
-
-### for OpenSUSE
-```
-sudo zypper install afb-ui-devtools
 ```
 
 ## Access Binder Devtool
