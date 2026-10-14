@@ -276,3 +276,16 @@ span {
   height: auto;
   overflow: unset;
 }
+
+.multi-args-container {
+  background-color: rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  padding: 6px;
+  margin-bottom: 4px;
+
+  textarea {
+    resize: vertical;
+    min-height: 28px;
+  }
+}

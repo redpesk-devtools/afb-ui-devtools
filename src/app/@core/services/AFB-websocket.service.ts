@@ -133,12 +133,17 @@ export class AFBWebSocketService {
     /**
      * Send data to the ws server
      */
-    Send(api: string, verb: string, params: object | string): Observable<[number,any[]]> {
-        const param = this.CheckQuery(params);
+    Send(api: string, verb: string, params: any | any[]): Observable<[number,any[]]> {
+        let args: any[];
+        if (Array.isArray(params)) {
+            args = params.map(p => this.CheckQuery(p));
+        } else {
+            args = [this.CheckQuery(params)];
+        }
         return this._isInitDone.pipe(
             filter(done => done),
             switchMap(() => {
-                return <Observable<[number,any[]]>>from(this.ws.callPromise(api, verb, [param])
+                return <Observable<[number,any[]]>>from(this.ws.callPromise(api, verb, args)
                     .then((obj: [number, Array<any>]) => {
                         return obj;
                     }).catch((err: [number, Array<any>]) => {
@@ -151,20 +156,27 @@ export class AFBWebSocketService {
 
     CheckIfJson(str: string): boolean {
         if (str === undefined || str === '' || !str.trim().length) {
-            return true;
+            return false;
         }
         try {
             JSON.parse(str);
+            return true;
         } catch (e) {
             return false;
         }
-        return true;
     }
 
-    CheckQuery(params: object | string) {
-        if (!params || params === undefined || (typeof params === 'string' && this.CheckIfJson(params) === false))
-            params = '{}';
-        return typeof params === 'string' ? JSON.parse(params) : params;
+    CheckQuery(params: any) {
+        if (params === undefined || params === null || (typeof params === 'string' && !params.trim().length))
+            return {};
+        if (typeof params === 'string') {
+            try {
+                return JSON.parse(params);
+            } catch (e) {
+                return params;
+            }
+        }
+        return params;
     }
 
     syntaxHighlight(json: any) {

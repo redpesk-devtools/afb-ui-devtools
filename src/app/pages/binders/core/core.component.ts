@@ -274,14 +274,79 @@ export class CoreComponent implements OnInit, OnDestroy {
     return hasInfo;
   }
 
-  callBinder(api: string, verb: string, query: string, connected: boolean) {
+  isMultiArgs: { [key: string]: boolean } = {};
+  multiQuery: { [key: string]: string[] } = {};
+
+  getKey(i: any, j: any, k: any): string {
+    return `${i}_${j}_${k}`;
+  }
+
+  isMulti(i: any, j: any, k: any): boolean {
+    return !!this.isMultiArgs[this.getKey(i, j, k)];
+  }
+
+  toggleMulti(i: any, j: any, k: any): void {
+    const key = this.getKey(i, j, k);
+    this.isMultiArgs[key] = !this.isMultiArgs[key];
+    if (this.isMultiArgs[key]) {
+      if (!this.multiQuery[key] || this.multiQuery[key].length === 0) {
+        const current = this.query?.[i]?.[j]?.[k];
+        this.multiQuery[key] = (current && current.trim().length > 0) ? [current] : [''];
+      }
+    }
+  }
+
+  getMultiArgs(i: any, j: any, k: any): string[] {
+    const key = this.getKey(i, j, k);
+    if (!this.multiQuery[key] || this.multiQuery[key].length === 0) {
+      this.multiQuery[key] = [''];
+    }
+    return this.multiQuery[key];
+  }
+
+  addArg(i: any, j: any, k: any): void {
+    const key = this.getKey(i, j, k);
+    if (!this.multiQuery[key]) {
+      this.multiQuery[key] = [''];
+    }
+    this.multiQuery[key].push('');
+  }
+
+  setActionOrSample(i: any, j: any, k: any, value: string): void {
+    if (!this.query[i]) this.query[i] = [];
+    if (!this.query[i][j]) this.query[i][j] = [];
+    this.query[i][j][k] = value;
+    const key = this.getKey(i, j, k);
+    if (this.isMultiArgs[key]) {
+      if (!this.multiQuery[key] || this.multiQuery[key].length === 0) {
+        this.multiQuery[key] = [value];
+      } else {
+        this.multiQuery[key][0] = value;
+      }
+    }
+  }
+
+  removeArg(i: any, j: any, k: any, index: number): void {
+    const key = this.getKey(i, j, k);
+    if (this.multiQuery[key] && this.multiQuery[key].length > 1) {
+      this.multiQuery[key].splice(index, 1);
+    } else if (this.multiQuery[key] && this.multiQuery[key].length === 1) {
+      this.multiQuery[key][0] = '';
+    }
+  }
+
+  callBinder(api: string, verb: string, query: string | string[], connected: boolean) {
     if (connected === true) {
       if (verb.charAt(0) === '/') {
         verb = verb.substring(1);
       }
       const proto = (window.location.protocol === 'https:' ? 'wss://' : 'ws://');
       let req = this.count + ': ' + proto + this.afbService.GetUrl() + '/api/' + api + '/' + verb;
-      if (query && query.trim().length > 0) {
+      const isMulti = Array.isArray(query);
+      if (isMulti) {
+        const queryParams = (query as string[]).map((q, idx) => `arg${idx}=` + (q || '""')).join('&');
+        req += '?' + queryParams;
+      } else if (query && (query as string).trim().length > 0) {
         req += '?query=' + query;
       }
       this.afbService.Send(api, verb, query).subscribe(e => {
@@ -289,7 +354,23 @@ export class CoreComponent implements OnInit, OnDestroy {
         this.questions.unshift(this.afbService.syntaxHighlight(req));
         this._questionsSubject.next(this.questions);
         const outcome = ': ' + (rc >= 0 ? ': OK' : ': ERROR') + '=' + rc.toString() + ' :';
-        const res = [this.count + outcome + this.afbService.syntaxHighlight(values[0])];
+
+        let formattedResponse = this.count + outcome;
+        if (!values || values.length === 0) {
+          formattedResponse += ' ' + this.afbService.syntaxHighlight('');
+        } else if (values.length === 1) {
+          formattedResponse += this.afbService.syntaxHighlight(values[0]);
+        } else {
+          // Multiple arguments returned: separate and label each argument
+          formattedResponse += ` (${values.length} arguments)\n`;
+          const parts = values.map((val, idx) => {
+            return `<span style="font-weight: 600; color: #102a43; background: #e2e8f0; padding: 1px 6px; border-radius: 3px; font-size: 0.7rem;">[Arg ${idx}]</span>\n` +
+                   this.afbService.syntaxHighlight(val);
+          });
+          formattedResponse += parts.join('\n\n');
+        }
+
+        const res = [formattedResponse];
         this.responses.unshift(res);
         this._responsesSubject.next(this.responses);
         this.count++;
