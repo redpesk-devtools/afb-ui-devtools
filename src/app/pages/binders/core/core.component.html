@@ -48,17 +48,20 @@
                                 </nb-accordion-item-header>
                                 <nb-accordion-item-body>
                                   <div class="queryDisplay">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                      <label class="mb-0">Query :</label>
-                                      <button type="button" nbButton size="tiny" [outline]="!isMulti(i,j,k)" status="info"
-                                        (click)="toggleMulti(i,j,k)" class="py-0 px-2" style="font-size: 0.7rem; height: 1.4rem;">
-                                        {{ isMulti(i,j,k) ? 'Multi-Args' : 'Single' }}
-                                      </button>
+                                    <div class="mb-1">
+                                      <label class="mb-0">
+                                        Query @if (isMulti(i,j,k)) { <span class="badge bg-light text-secondary ms-1" style="font-size: 0.65rem;">({{ getMultiArgs(i,j,k).length }} args)</span> } :
+                                      </label>
                                     </div>
                                     @if (!isMulti(i,j,k)) {
                                       <textarea nbInput fullWidth class="font-weight-light"
-                                        [(ngModel)]="query[i][j][k]"
+                                        [(ngModel)]="getMultiArgs(i,j,k)[0]"
                                         placeholder='use {} or [] or "" or number'></textarea>
+                                      <div class="d-flex justify-content-start my-1">
+                                        <button type="button" nbButton outline status="primary" size="tiny" (click)="addArg(i,j,k)" style="font-size: 0.65rem; padding: 2px 6px;">
+                                          <nb-icon icon="plus-outline"></nb-icon> Add Argument
+                                        </button>
+                                      </div>
                                     } @else {
                                       <div class="multi-args-container">
                                         @for (arg of getMultiArgs(i,j,k); track $index; let argIdx = $index) {
@@ -67,12 +70,10 @@
                                             <textarea nbInput fullWidth class="font-weight-light" rows="1"
                                               [(ngModel)]="multiQuery[getKey(i,j,k)][argIdx]"
                                               placeholder='Arg {{argIdx}} (JSON or string)'></textarea>
-                                            @if (getMultiArgs(i,j,k).length > 1) {
-                                              <button type="button" nbButton ghost status="danger" size="tiny" class="p-0 ms-1"
-                                                (click)="removeArg(i,j,k,argIdx)" nbTooltip="Remove argument">
-                                                <nb-icon icon="close-outline"></nb-icon>
-                                              </button>
-                                            }
+                                            <button type="button" nbButton ghost status="danger" size="tiny" class="p-0 ms-1"
+                                              (click)="removeArg(i,j,k,argIdx)" nbTooltip="Remove argument">
+                                              <nb-icon icon="close-outline"></nb-icon>
+                                            </button>
                                           </div>
                                         }
                                         <div class="d-flex justify-content-start my-1">
@@ -84,7 +85,7 @@
                                     }
                                     <button nbButton shape="round" status="primary" size="small"
                                       class="float-right mt-1"
-                                      (click)="callBinder(apiMonitor.api, verb.verb, isMulti(i,j,k) ? getMultiArgs(i,j,k) : query[i][j][k], wsstat?.connected)">Send</button>
+                                      (click)="callBinder(apiMonitor.api, verb.verb, isMulti(i,j,k) ? getMultiArgs(i,j,k) : getMultiArgs(i,j,k)[0], wsstat?.connected)">Send</button>
                                   </div>
                                 </nb-accordion-item-body>
                               </nb-accordion-item>
@@ -194,17 +195,20 @@
                                                 }
                                               </nb-card>
                                             }
-                                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                              <label class="mb-0">Query :</label>
-                                              <button type="button" nbButton size="tiny" [outline]="!isMulti(i,j,k)" status="info"
-                                                (click)="toggleMulti(i,j,k)" class="py-0 px-2" style="font-size: 0.7rem; height: 1.4rem;">
-                                                {{ isMulti(i,j,k) ? 'Multi-Args' : 'Single' }}
-                                              </button>
+                                            <div class="mb-1">
+                                              <label class="mb-0">
+                                                Query @if (isMulti(i,j,k)) { <span class="badge bg-light text-secondary ms-1" style="font-size: 0.65rem;">({{ getMultiArgs(i,j,k).length }} args)</span> } :
+                                              </label>
                                             </div>
                                             @if (!isMulti(i,j,k)) {
                                               <textarea nbInput fullWidth class="font-weight-light"
-                                                [(ngModel)]="query[i][j][k]"
+                                                [(ngModel)]="getMultiArgs(i,j,k)[0]"
                                                 [placeholder]="verb.usage ? getUsage(action, verb.usage) : ''"></textarea>
+                                              <div class="d-flex justify-content-start my-1">
+                                                <button type="button" nbButton outline status="primary" size="tiny" (click)="addArg(i,j,k)" style="font-size: 0.65rem; padding: 2px 6px;">
+                                                  <nb-icon icon="plus-outline"></nb-icon> Add Argument
+                                                </button>
+                                              </div>
                                             } @else {
                                               <div class="multi-args-container">
                                                 @for (arg of getMultiArgs(i,j,k); track $index; let argIdx = $index) {
@@ -213,12 +217,10 @@
                                                     <textarea nbInput fullWidth class="font-weight-light" rows="1"
                                                       [(ngModel)]="multiQuery[getKey(i,j,k)][argIdx]"
                                                       placeholder='Arg {{argIdx}} (JSON or string)'></textarea>
-                                                    @if (getMultiArgs(i,j,k).length > 1) {
-                                                      <button type="button" nbButton ghost status="danger" size="tiny" class="p-0 ms-1"
-                                                        (click)="removeArg(i,j,k,argIdx)" nbTooltip="Remove argument">
-                                                        <nb-icon icon="close-outline"></nb-icon>
-                                                      </button>
-                                                    }
+                                                    <button type="button" nbButton ghost status="danger" size="tiny" class="p-0 ms-1"
+                                                      (click)="removeArg(i,j,k,argIdx)" nbTooltip="Remove argument">
+                                                      <nb-icon icon="close-outline"></nb-icon>
+                                                    </button>
                                                   </div>
                                                 }
                                                 <div class="d-flex justify-content-start my-1">
@@ -230,7 +232,7 @@
                                             }
                                             <button nbButton shape="round" status="primary"
                                               size="tiny" class="float-right mt-1"
-                                              (click)="!verb.verb ? callBinder(api.api, verb.uid, isMulti(i,j,k) ? getMultiArgs(i,j,k) : query[i][j][k], wsstat?.connected) : callBinder(api.api, verb.verb, isMulti(i,j,k) ? getMultiArgs(i,j,k) : query[i][j][k], wsstat?.connected)">Send</button>
+                                              (click)="!verb.verb ? callBinder(api.api, verb.uid, isMulti(i,j,k) ? getMultiArgs(i,j,k) : getMultiArgs(i,j,k)[0], wsstat?.connected) : callBinder(api.api, verb.verb, isMulti(i,j,k) ? getMultiArgs(i,j,k) : getMultiArgs(i,j,k)[0], wsstat?.connected)">Send</button>
                                           </div>
                                       </nb-accordion-item-body>
                                     </nb-accordion-item>
