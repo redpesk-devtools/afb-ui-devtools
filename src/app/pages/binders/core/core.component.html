@@ -48,20 +48,19 @@
                                 </nb-accordion-item-header>
                                 <nb-accordion-item-body>
                                   <div class="queryDisplay">
-                                    <div class="mb-1">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
                                       <label class="mb-0">
                                         Query @if (isMulti(i,j,k)) { <span class="badge bg-light text-secondary ms-1" style="font-size: 0.65rem;">({{ getMultiArgs(i,j,k).length }} args)</span> } :
                                       </label>
+                                      <button type="button" nbButton outline status="primary" size="tiny"
+                                        (click)="addArg(i,j,k)" class="py-0 px-2" style="font-size: 0.7rem; height: 1.4rem;">
+                                        <nb-icon icon="plus-outline"></nb-icon> Add Argument
+                                      </button>
                                     </div>
                                     @if (!isMulti(i,j,k)) {
                                       <textarea nbInput fullWidth class="font-weight-light"
                                         [(ngModel)]="getMultiArgs(i,j,k)[0]"
                                         placeholder='use {} or [] or "" or number'></textarea>
-                                      <div class="d-flex justify-content-start my-1">
-                                        <button type="button" nbButton outline status="primary" size="tiny" (click)="addArg(i,j,k)" style="font-size: 0.65rem; padding: 2px 6px;">
-                                          <nb-icon icon="plus-outline"></nb-icon> Add Argument
-                                        </button>
-                                      </div>
                                     } @else {
                                       <div class="multi-args-container">
                                         @for (arg of getMultiArgs(i,j,k); track $index; let argIdx = $index) {
@@ -69,18 +68,13 @@
                                             <span class="badge bg-light text-secondary me-1" style="font-size: 0.65rem; min-width: 45px;">Arg {{argIdx}}</span>
                                             <textarea nbInput fullWidth class="font-weight-light" rows="1"
                                               [(ngModel)]="multiQuery[getKey(i,j,k)][argIdx]"
-                                              placeholder='Arg {{argIdx}} (JSON or string)'></textarea>
+                                              placeholder='use {} or [] or "" or number'></textarea>
                                             <button type="button" nbButton ghost status="danger" size="tiny" class="p-0 ms-1"
                                               (click)="removeArg(i,j,k,argIdx)" nbTooltip="Remove argument">
                                               <nb-icon icon="close-outline"></nb-icon>
                                             </button>
                                           </div>
                                         }
-                                        <div class="d-flex justify-content-start my-1">
-                                          <button type="button" nbButton outline status="primary" size="tiny" (click)="addArg(i,j,k)" style="font-size: 0.65rem; padding: 2px 6px;">
-                                            <nb-icon icon="plus-outline"></nb-icon> Add Argument
-                                          </button>
-                                        </div>
                                       </div>
                                     }
                                     <button nbButton shape="round" status="primary" size="small"
@@ -195,20 +189,19 @@
                                                 }
                                               </nb-card>
                                             }
-                                            <div class="mb-1">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
                                               <label class="mb-0">
                                                 Query @if (isMulti(i,j,k)) { <span class="badge bg-light text-secondary ms-1" style="font-size: 0.65rem;">({{ getMultiArgs(i,j,k).length }} args)</span> } :
                                               </label>
+                                              <button type="button" nbButton outline status="primary" size="tiny"
+                                                (click)="addArg(i,j,k)" class="py-0 px-2" style="font-size: 0.7rem; height: 1.4rem;">
+                                                <nb-icon icon="plus-outline"></nb-icon> Add Argument
+                                              </button>
                                             </div>
                                             @if (!isMulti(i,j,k)) {
                                               <textarea nbInput fullWidth class="font-weight-light"
                                                 [(ngModel)]="getMultiArgs(i,j,k)[0]"
-                                                [placeholder]="verb.usage ? getUsage(action, verb.usage) : ''"></textarea>
-                                              <div class="d-flex justify-content-start my-1">
-                                                <button type="button" nbButton outline status="primary" size="tiny" (click)="addArg(i,j,k)" style="font-size: 0.65rem; padding: 2px 6px;">
-                                                  <nb-icon icon="plus-outline"></nb-icon> Add Argument
-                                                </button>
-                                              </div>
+                                                [placeholder]="(verb.usage ? getUsage(action, verb.usage) : '') || 'use {} or [] or &quot;&quot; or number'"></textarea>
                                             } @else {
                                               <div class="multi-args-container">
                                                 @for (arg of getMultiArgs(i,j,k); track $index; let argIdx = $index) {
@@ -216,18 +209,13 @@
                                                     <span class="badge bg-light text-secondary me-1" style="font-size: 0.65rem; min-width: 45px;">Arg {{argIdx}}</span>
                                                     <textarea nbInput fullWidth class="font-weight-light" rows="1"
                                                       [(ngModel)]="multiQuery[getKey(i,j,k)][argIdx]"
-                                                      placeholder='Arg {{argIdx}} (JSON or string)'></textarea>
+                                                      placeholder='use {} or [] or "" or number'></textarea>
                                                     <button type="button" nbButton ghost status="danger" size="tiny" class="p-0 ms-1"
                                                       (click)="removeArg(i,j,k,argIdx)" nbTooltip="Remove argument">
                                                       <nb-icon icon="close-outline"></nb-icon>
                                                     </button>
                                                   </div>
                                                 }
-                                                <div class="d-flex justify-content-start my-1">
-                                                  <button type="button" nbButton outline status="primary" size="tiny" (click)="addArg(i,j,k)" style="font-size: 0.65rem; padding: 2px 6px;">
-                                                    <nb-icon icon="plus-outline"></nb-icon> Add Argument
-                                                  </button>
-                                                </div>
                                               </div>
                                             }
                                             <button nbButton shape="round" status="primary"
