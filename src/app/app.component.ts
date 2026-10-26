@@ -52,7 +52,7 @@ export class AppComponent implements OnInit, OnDestroy {
         // this.afbService.Init('api', 'HELLO');
 
         if (environment.production) {
-            this.afbService.SetURL(window.location.host);
+            this.afbService.SetURL(window.location.hostname, window.location.port);
         } else {
             // Useful when debugging app using 'ng serve'
             // note that helloworld-binding must be start on localhost port 1234
