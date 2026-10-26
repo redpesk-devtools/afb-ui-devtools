@@ -26,7 +26,6 @@
 
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { NbIconLibraries } from '@nebular/theme';
-import { environment } from '../environments/environment';
 import { AFBWebSocketService } from './@core/services/AFB-websocket.service';
 import { RouterOutlet } from '@angular/router';
 
@@ -41,24 +40,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
     constructor() {
-        const afbService = this.afbService;
-
         this.iconLibraries.registerFontPack('font-awesome', { iconClassPrefix: 'fa' });
         this.iconLibraries.setDefaultPack('font-awesome');
-        afbService.Init('api', 'HELLO');
+        this.afbService.Init('api');
     }
 
     ngOnInit() {
-        // this.afbService.Init('api', 'HELLO');
 
-        if (environment.production) {
-            this.afbService.SetURL(window.location.hostname, window.location.port);
-        } else {
-            // Useful when debugging app using 'ng serve'
-            // note that helloworld-binding must be start on localhost port 1234
-            // afb-binder --port=1234 --ldpaths=package --workdir=. --roothttp=./afb-ui-devtools/dist -vvv
-            this.afbService.SetURL('localhost', '1234');
-        }
+        this.afbService.SetURL(window.location.hostname, window.location.port);
         this.afbService.Connect();
     }
 
